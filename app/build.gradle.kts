@@ -74,6 +74,8 @@ dependencies {
     implementation(platform(libs.retrofit.bom))
     implementation(platform(libs.okhttp.bom))
     implementation(libs.bundles.retrofitBundle)
+    testImplementation(libs.mockwebserver)
+    testImplementation(libs.kotlinx.coroutines.test)
 
     implementation(libs.sandwich)
     implementation(libs.sandwich.retrofit)
