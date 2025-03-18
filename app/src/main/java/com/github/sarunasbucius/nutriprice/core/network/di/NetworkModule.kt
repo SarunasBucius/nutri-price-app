@@ -1,5 +1,6 @@
 package com.github.sarunasbucius.nutriprice.core.network.di
 
+import com.github.sarunasbucius.nutriprice.BuildConfig
 import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceClient
 import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceService
 import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
@@ -35,7 +36,7 @@ internal object NetworkModule {
     fun provideRetrofit(json: Json, okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl("http://10.0.2.2:3000")
+            .baseUrl(BuildConfig.API_URL)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .addCallAdapterFactory(ApiResponseCallAdapterFactory.create())
             .build()
