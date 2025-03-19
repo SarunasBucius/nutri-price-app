@@ -17,9 +17,9 @@ interface NutriPriceService {
     @POST("products")
     suspend fun insertProduct(@Body product: Product): ApiResponse<SuccessResponse>
 
-    @GET("recipes")
+    @GET("v2/recipes")
     suspend fun fetchRecipeList(): ApiResponse<List<String>>
 
-    @POST("recipes")
+    @POST("v2/recipes")
     suspend fun insertRecipe(@Body recipe: Recipe): ApiResponse<SuccessResponse>
 }
