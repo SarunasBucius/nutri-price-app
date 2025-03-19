@@ -15,4 +15,7 @@ sealed interface NutriPriceScreen {
 
     @Serializable
     data object RecipeList : NutriPriceScreen
+
+    @Serializable
+    data object InsertRecipe : NutriPriceScreen
 }
