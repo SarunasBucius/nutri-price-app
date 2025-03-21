@@ -27,6 +27,8 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.sarunasbucius.nutriprice.core.design.component.UnitDropdown
+import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 
 @Composable
@@ -148,15 +150,20 @@ fun InsertRecipeScreen(
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
 
                     label = { Text("Amount") })
-                TextField(
+
+                UnitDropdown(
                     modifier = Modifier
                         .weight(1f)
                         .padding(start = 4.dp),
-                    value = ingredient.unit,
+                    unit = ingredient.unit,
                     onValueChange = {
-                        insertRecipeViewModel.updateIngredient(ingredient.copy(unit = it), index)
-                    },
-                    label = { Text("Unit") })
+                        insertRecipeViewModel.updateIngredient(
+                            ingredient.copy(
+                                unit = it as? QuantityUnit ?: QuantityUnit.UNSPECIFIED
+                            ), index
+                        )
+                    }
+                )
             }
 
             TextField(
