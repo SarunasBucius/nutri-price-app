@@ -18,13 +18,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class InsertProductUiState(
-    var productName: String = "",
-    var price: String = "",
-    var amount: String = "",
-    var unit: String = "",
-    var notes: String = "",
-    var nutritionalValues: NutritionalValueUi = NutritionalValueUi(),
-    var errors: List<String> = emptyList(),
+    val productName: String = "",
+    val price: String = "",
+    val amount: String = "",
+    val unit: String = "",
+    val notes: String = "",
+    val nutritionalValues: NutritionalValueUi = NutritionalValueUi(),
+    val errors: List<String> = emptyList(),
 )
 
 data class NutritionalValueUi(

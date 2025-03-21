@@ -222,10 +222,8 @@ fun InsertProductScreen(
             )
         }
 
-        if (uiState.errors.isNotEmpty()) {
-            uiState.errors.forEach {
-                Text(text = it, color = androidx.compose.ui.graphics.Color.Red)
-            }
+        uiState.errors.forEach {
+            Text(text = it, color = androidx.compose.ui.graphics.Color.Red)
         }
 
         Button(onClick = { insertProductViewModel.insertProduct { composeNavigator.navigateUp() } }) {
