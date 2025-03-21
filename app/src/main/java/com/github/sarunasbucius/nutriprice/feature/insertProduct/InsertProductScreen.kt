@@ -16,6 +16,9 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.sarunasbucius.nutriprice.core.design.component.UnitDropdown
+import com.github.sarunasbucius.nutriprice.core.model.NutritionalValueUnit
+import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 
 @Composable
@@ -64,14 +67,17 @@ fun InsertProductScreen(
                 label = { Text("Amount") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
-            TextField(
+
+            UnitDropdown(
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = 8.dp),
-                value = uiState.unit,
-                onValueChange = { insertProductViewModel.updateUnit(it) },
-                label = { Text("Unit") },
-                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+                unit = uiState.unit,
+                onValueChange = {
+                    insertProductViewModel.updateUnit(
+                        it as? QuantityUnit ?: QuantityUnit.UNSPECIFIED
+                    )
+                }
             )
         }
 
@@ -90,17 +96,19 @@ fun InsertProductScreen(
         )
 
         Row(modifier = Modifier.padding(bottom = 8.dp)) {
-            TextField(
+            UnitDropdown(
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 2.dp),
-                value = uiState.nutritionalValues.unit,
+                unit = uiState.nutritionalValues.unit,
+                units = NutritionalValueUnit.entries,
                 onValueChange = {
                     insertProductViewModel.updateNutritionalValue(
-                        uiState.nutritionalValues.copy(unit = it)
+                        uiState.nutritionalValues.copy(
+                            unit = it as? NutritionalValueUnit ?: NutritionalValueUnit.UNSPECIFIED
+                        )
                     )
-                },
-                label = { Text("Unit") },
+                }
             )
 
             TextField(

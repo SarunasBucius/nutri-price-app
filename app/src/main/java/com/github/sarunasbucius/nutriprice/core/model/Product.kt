@@ -7,14 +7,14 @@ data class Product(
     val name: String,
     val price: Double?,
     val amount: Double?,
-    val unit: String,
+    val unit: QuantityUnit?,
     val notes: String,
     val nutritionalValues: NutritionalValue
 )
 
 @Serializable
 data class NutritionalValue(
-    val unit: String,
+    val unit: NutritionalValueUnit?,
     val energyValueKcal: Double?,
     val fat: Double?,
     val saturatedFat: Double?,

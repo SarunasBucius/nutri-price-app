@@ -6,7 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
+import com.github.sarunasbucius.nutriprice.core.model.NutritionalValueUnit
 import com.github.sarunasbucius.nutriprice.core.model.Product
+import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceClient
@@ -21,14 +23,14 @@ data class InsertProductUiState(
     val productName: String = "",
     val price: String = "",
     val amount: String = "",
-    val unit: String = "",
+    val unit: QuantityUnit = QuantityUnit.UNSPECIFIED,
     val notes: String = "",
     val nutritionalValues: NutritionalValueUi = NutritionalValueUi(),
     val errors: List<String> = emptyList(),
 )
 
 data class NutritionalValueUi(
-    val unit: String = "",
+    val unit: NutritionalValueUnit = NutritionalValueUnit.UNSPECIFIED,
     val energyValueKcal: String = "",
     val fat: String = "",
     val saturatedFat: String = "",
@@ -59,7 +61,7 @@ class InsertProductViewModel @Inject constructor(
         uiState = uiState.copy(amount = amount)
     }
 
-    fun updateUnit(unit: String) {
+    fun updateUnit(unit: QuantityUnit) {
         uiState = uiState.copy(unit = unit)
     }
 
