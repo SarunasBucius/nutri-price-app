@@ -1,5 +1,6 @@
 package com.github.sarunasbucius.nutriprice.feature.insertRecipe
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.github.sarunasbucius.nutriprice.core.design.component.NutriPriceCircularProgress
 import com.github.sarunasbucius.nutriprice.core.design.component.UnitDropdown
 import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
@@ -74,7 +76,8 @@ fun InsertRecipeScreen(
                 updateIngredient = { insertRecipeViewModel.updateIngredient(it, index) },
                 removeIngredient = { insertRecipeViewModel.removeIngredient(index) },
                 ingredientsNumber = uiState.ingredients.size,
-                productList = productList
+                productList = productList,
+                isProductListLoading = uiState.isLoading
             )
         }
 
@@ -155,7 +158,8 @@ fun IngredientSection(
     updateIngredient: (IngredientUi) -> Unit,
     removeIngredient: () -> Unit,
     ingredientsNumber: Int,
-    productList: List<String>
+    productList: List<String>,
+    isProductListLoading: Boolean
 ) {
     Row(
         modifier = Modifier
@@ -167,6 +171,7 @@ fun IngredientSection(
             productList = productList,
             ingredient = ingredient,
             updateIngredient = { updateIngredient(it) },
+            isLoading = isProductListLoading
         )
         if (ingredientsNumber > 1) {
             IconButton(
@@ -232,6 +237,7 @@ fun FilterableProductDropdown(
     productList: List<String>,
     ingredient: IngredientUi,
     updateIngredient: (IngredientUi) -> Unit,
+    isLoading: Boolean
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -259,6 +265,12 @@ fun FilterableProductDropdown(
                 expanded = false
             }
         ) {
+            if (isLoading) {
+                DropdownMenuItem(
+                    text = { Box(modifier = Modifier.fillMaxSize()) { NutriPriceCircularProgress() } },
+                    onClick = { }
+                )
+            }
             productList.filter { it.contains(ingredient.name, ignoreCase = true) }.forEach {
                 DropdownMenuItem(
                     text = { Text(it) },

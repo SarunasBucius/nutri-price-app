@@ -23,6 +23,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,6 +35,7 @@ data class InsertRecipeUiState(
     val steps: List<String> = listOf(""),
     val ingredients: List<IngredientUi> = listOf(IngredientUi()),
     val errors: List<String> = emptyList(),
+    val isLoading: Boolean = false
 )
 
 data class IngredientUi(
@@ -56,11 +59,13 @@ class InsertRecipeViewModel @Inject constructor(
         }.onFailure {
             Log.e("InsertRecipeViewModel", message())
         }
-    }.flowOn(ioDispatcher).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = emptyList()
-    )
+    }.onStart { uiState = uiState.copy(isLoading = true) }
+        .onCompletion { uiState = uiState.copy(isLoading = false) }
+        .flowOn(ioDispatcher).stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
 
     fun updateName(name: String) {
         uiState = uiState.copy(recipeName = name)
