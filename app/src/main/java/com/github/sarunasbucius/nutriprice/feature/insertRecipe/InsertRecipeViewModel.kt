@@ -1,5 +1,6 @@
 package com.github.sarunasbucius.nutriprice.feature.insertRecipe
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,10 +12,18 @@ import com.github.sarunasbucius.nutriprice.core.model.Recipe
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceClient
+import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onError
+import com.skydoves.sandwich.onFailure
 import com.skydoves.sandwich.onSuccess
+import com.skydoves.sandwich.suspendOnSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -40,6 +49,18 @@ class InsertRecipeViewModel @Inject constructor(
 ) : ViewModel() {
     var uiState by mutableStateOf(InsertRecipeUiState())
         private set
+
+    val productList: StateFlow<List<String>> = flow {
+        nutriPriceClient.fetchProductList().suspendOnSuccess {
+            emit(data)
+        }.onFailure {
+            Log.e("InsertRecipeViewModel", message())
+        }
+    }.flowOn(ioDispatcher).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList()
+    )
 
     fun updateName(name: String) {
         uiState = uiState.copy(recipeName = name)
