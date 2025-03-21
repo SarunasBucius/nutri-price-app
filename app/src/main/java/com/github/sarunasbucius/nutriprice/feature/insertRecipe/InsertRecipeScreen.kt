@@ -44,61 +44,11 @@ fun InsertRecipeScreen(
             .verticalScroll(rememberScrollState())
             .padding(bottom = WindowInsets.ime.asPaddingValues().calculateBottomPadding())
     ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(8.dp),
-            text = "Recipe details",
+        RecipeDetailsSection(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            uiState,
+            insertRecipeViewModel
         )
-
-        TextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            value = uiState.recipeName,
-            onValueChange = { insertRecipeViewModel.updateName(it) },
-            label = { Text("Recipe name") },
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-        )
-
-        TextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            value = uiState.notes,
-            onValueChange = { insertRecipeViewModel.updateNotes(it) },
-            label = { Text("Notes") },
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-        )
-
-        uiState.steps.forEachIndexed { index, step ->
-            Row(
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
-                    .fillMaxWidth()
-            ) {
-                TextField(
-                    modifier = Modifier.weight(1f),
-                    value = step,
-                    onValueChange = {
-                        insertRecipeViewModel.updateStep(it, index)
-                    },
-                    label = { Text("Step ${index + 1}") },
-                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-                )
-                if (uiState.steps.size > 1) {
-                    IconButton(
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        onClick = { insertRecipeViewModel.removeStep(index) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = "Remove step"
-                        )
-                    }
-                }
-            }
-        }
 
         Text(
             modifier = Modifier
@@ -108,78 +58,12 @@ fun InsertRecipeScreen(
         )
 
         uiState.ingredients.forEachIndexed { index, ingredient ->
-            Row(
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
-                    .fillMaxWidth()
-            ) {
-                TextField(
-                    modifier = Modifier.weight(1f),
-                    value = ingredient.name,
-                    onValueChange = {
-                        insertRecipeViewModel.updateIngredient(ingredient.copy(name = it), index)
-                    },
-                    label = { Text("Product") },
-                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-                )
-                if (uiState.ingredients.size > 1) {
-                    IconButton(
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        onClick = { insertRecipeViewModel.removeIngredient(index) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = "Remove ingredient"
-                        )
-                    }
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
-                    .fillMaxWidth()
-            ) {
-                TextField(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 4.dp),
-                    value = ingredient.amount,
-                    onValueChange = {
-                        insertRecipeViewModel.updateIngredient(ingredient.copy(amount = it), index)
-                    },
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-
-                    label = { Text("Amount") })
-
-                UnitDropdown(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 4.dp),
-                    unit = ingredient.unit,
-                    onValueChange = {
-                        insertRecipeViewModel.updateIngredient(
-                            ingredient.copy(
-                                unit = it as? QuantityUnit ?: QuantityUnit.UNSPECIFIED
-                            ), index
-                        )
-                    }
-                )
-            }
-
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = ingredient.notes,
-                onValueChange = {
-                    insertRecipeViewModel.updateIngredient(
-                        ingredient.copy(notes = it),
-                        index
-                    )
-                },
-                label = { Text("Notes") },
-                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+            IngredientSection(
+                ingredient = ingredient,
+                updateIngredient = { insertRecipeViewModel.updateIngredient(it, index) },
+                removeIngredient = { insertRecipeViewModel.removeIngredient(index) },
+                ingredientsNumber = uiState.ingredients.size
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
 
         uiState.errors.forEach {
@@ -190,4 +74,143 @@ fun InsertRecipeScreen(
             Text(text = "Insert recipe")
         }
     }
+}
+
+@Composable
+fun RecipeDetailsSection(
+    modifier: Modifier = Modifier,
+    uiState: InsertRecipeUiState,
+    insertRecipeViewModel: InsertRecipeViewModel
+) {
+    Text(
+        modifier = modifier.padding(8.dp),
+        text = "Recipe details",
+    )
+
+    TextField(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        value = uiState.recipeName,
+        onValueChange = { insertRecipeViewModel.updateName(it) },
+        label = { Text("Recipe name") },
+        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+    )
+
+    TextField(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        value = uiState.notes,
+        onValueChange = { insertRecipeViewModel.updateNotes(it) },
+        label = { Text("Notes") },
+        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+    )
+
+    uiState.steps.forEachIndexed { index, step ->
+        Row(
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .fillMaxWidth()
+        ) {
+            TextField(
+                modifier = Modifier.weight(1f),
+                value = step,
+                onValueChange = {
+                    insertRecipeViewModel.updateStep(it, index)
+                },
+                label = { Text("Step ${index + 1}") },
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+            )
+            if (uiState.steps.size > 1) {
+                IconButton(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    onClick = { insertRecipeViewModel.removeStep(index) }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "Remove step"
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun IngredientSection(
+    ingredient: IngredientUi,
+    updateIngredient: (IngredientUi) -> Unit,
+    removeIngredient: () -> Unit,
+    ingredientsNumber: Int
+) {
+    Row(
+        modifier = Modifier
+            .padding(bottom = 8.dp)
+            .fillMaxWidth()
+    ) {
+        TextField(
+            modifier = Modifier.weight(1f),
+            value = ingredient.name,
+            onValueChange = {
+                updateIngredient(ingredient.copy(name = it))
+            },
+            label = { Text("Product") },
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+        )
+        if (ingredientsNumber > 1) {
+            IconButton(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                onClick = { removeIngredient() }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = "Remove ingredient"
+                )
+            }
+        }
+    }
+    Row(
+        modifier = Modifier
+            .padding(bottom = 8.dp)
+            .fillMaxWidth()
+    ) {
+        TextField(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 4.dp),
+            value = ingredient.amount,
+            onValueChange = {
+                updateIngredient(ingredient.copy(amount = it))
+            },
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+
+            label = { Text("Amount") })
+
+        UnitDropdown(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 4.dp),
+            unit = ingredient.unit,
+            onValueChange = {
+                updateIngredient(
+                    ingredient.copy(
+                        unit = it as? QuantityUnit ?: QuantityUnit.UNSPECIFIED
+                    )
+                )
+            }
+        )
+    }
+
+    TextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = ingredient.notes,
+        onValueChange = {
+            updateIngredient(ingredient.copy(notes = it))
+        },
+        label = { Text("Notes") },
+        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
 }
