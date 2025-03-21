@@ -33,202 +33,17 @@ fun InsertProductScreen(
             .padding(16.dp)
             .fillMaxSize()
     ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(8.dp),
-            text = "Purchased product details",
-        )
-        TextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            value = uiState.productName,
-            onValueChange = { insertProductViewModel.updateName(it) },
-            label = { Text("Product name") },
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-
+        ProductSection(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            uiState = uiState,
+            insertProductViewModel = insertProductViewModel
         )
 
-        Row(modifier = Modifier.padding(bottom = 8.dp)) {
-            TextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 8.dp),
-                value = uiState.price,
-                onValueChange = { insertProductViewModel.updatePrice(it) },
-                label = { Text("Price") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-            TextField(
-                modifier = Modifier.weight(1f),
-                value = uiState.amount,
-                onValueChange = { insertProductViewModel.updateAmount(it) },
-                label = { Text("Amount") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-
-            UnitDropdown(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 8.dp),
-                unit = uiState.unit,
-                onValueChange = {
-                    insertProductViewModel.updateUnit(
-                        it as? QuantityUnit ?: QuantityUnit.UNSPECIFIED
-                    )
-                }
-            )
-        }
-
-        TextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = uiState.notes,
-            onValueChange = { insertProductViewModel.updateNotes(it) },
-            label = { Text("Notes") },
+        NutritionalValueSection(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            nutritionalValues = uiState.nutritionalValues,
+            updateNutritionalValue = insertProductViewModel::updateNutritionalValue
         )
-
-        Text(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(8.dp),
-            text = "Nutritional values"
-        )
-
-        Row(modifier = Modifier.padding(bottom = 8.dp)) {
-            UnitDropdown(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 2.dp),
-                unit = uiState.nutritionalValues.unit,
-                units = NutritionalValueUnit.entries,
-                onValueChange = {
-                    insertProductViewModel.updateNutritionalValue(
-                        uiState.nutritionalValues.copy(
-                            unit = it as? NutritionalValueUnit ?: NutritionalValueUnit.UNSPECIFIED
-                        )
-                    )
-                }
-            )
-
-            TextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 2.dp),
-                value = uiState.nutritionalValues.energyValueKcal,
-                onValueChange = {
-                    insertProductViewModel.updateNutritionalValue(
-                        uiState.nutritionalValues.copy(energyValueKcal = it)
-                    )
-                },
-                label = { Text("Energy value (kcal)") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-        }
-
-        Row(modifier = Modifier.padding(bottom = 8.dp)) {
-            TextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 2.dp),
-                value = uiState.nutritionalValues.fat,
-                onValueChange = {
-                    insertProductViewModel.updateNutritionalValue(
-                        uiState.nutritionalValues.copy(fat = it)
-                    )
-                },
-                label = { Text("Fat") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-
-            TextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 2.dp),
-                value = uiState.nutritionalValues.saturatedFat,
-                onValueChange = {
-                    insertProductViewModel.updateNutritionalValue(
-                        uiState.nutritionalValues.copy(saturatedFat = it)
-                    )
-                },
-                label = { Text("Saturated fat") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-        }
-
-        Row(modifier = Modifier.padding(bottom = 8.dp)) {
-            TextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 2.dp),
-                value = uiState.nutritionalValues.carbohydrate,
-                onValueChange = {
-                    insertProductViewModel.updateNutritionalValue(
-                        uiState.nutritionalValues.copy(carbohydrate = it)
-                    )
-                },
-                label = { Text("Carbohydrate") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-
-            TextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 2.dp),
-                value = uiState.nutritionalValues.carbohydrateSugars,
-                onValueChange = {
-                    insertProductViewModel.updateNutritionalValue(
-                        uiState.nutritionalValues.copy(carbohydrateSugars = it)
-                    )
-                },
-                label = { Text("Sugars") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-        }
-
-        Row(modifier = Modifier.padding(bottom = 8.dp)) {
-            TextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 2.dp),
-                value = uiState.nutritionalValues.fibre,
-                onValueChange = {
-                    insertProductViewModel.updateNutritionalValue(
-                        uiState.nutritionalValues.copy(fibre = it)
-                    )
-                },
-                label = { Text("Fibre") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-
-            TextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 2.dp),
-                value = uiState.nutritionalValues.protein,
-                onValueChange = {
-                    insertProductViewModel.updateNutritionalValue(
-                        uiState.nutritionalValues.copy(protein = it)
-                    )
-                },
-                label = { Text("Protein") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-
-            TextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 2.dp),
-                value = uiState.nutritionalValues.salt,
-                onValueChange = {
-                    insertProductViewModel.updateNutritionalValue(
-                        uiState.nutritionalValues.copy(salt = it)
-                    )
-                },
-                label = { Text("Salt") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-            )
-        }
 
         uiState.errors.forEach {
             Text(text = it, color = androidx.compose.ui.graphics.Color.Red)
@@ -237,5 +52,214 @@ fun InsertProductScreen(
         Button(onClick = { insertProductViewModel.insertProduct { composeNavigator.navigateUp() } }) {
             Text(text = "Insert product")
         }
+    }
+}
+
+@Composable
+fun ProductSection(
+    modifier: Modifier = Modifier,
+    uiState: InsertProductUiState,
+    insertProductViewModel: InsertProductViewModel
+) {
+    Text(
+        modifier = modifier
+            .padding(8.dp),
+        text = "Purchased product details",
+    )
+    TextField(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        value = uiState.productName,
+        onValueChange = { insertProductViewModel.updateName(it) },
+        label = { Text("Product name") },
+        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+
+    )
+
+    Row(modifier = Modifier.padding(bottom = 8.dp)) {
+        TextField(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp),
+            value = uiState.price,
+            onValueChange = { insertProductViewModel.updatePrice(it) },
+            label = { Text("Price") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+        TextField(
+            modifier = Modifier.weight(1f),
+            value = uiState.amount,
+            onValueChange = { insertProductViewModel.updateAmount(it) },
+            label = { Text("Amount") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        UnitDropdown(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 8.dp),
+            unit = uiState.unit,
+            onValueChange = {
+                insertProductViewModel.updateUnit(
+                    it as? QuantityUnit ?: QuantityUnit.UNSPECIFIED
+                )
+            }
+        )
+    }
+
+    TextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = uiState.notes,
+        onValueChange = { insertProductViewModel.updateNotes(it) },
+        label = { Text("Notes") },
+    )
+}
+
+@Composable
+fun NutritionalValueSection(
+    modifier: Modifier = Modifier,
+    nutritionalValues: NutritionalValueUi,
+    updateNutritionalValue: (NutritionalValueUi) -> Unit
+) {
+    Text(
+        modifier = modifier
+            .padding(8.dp),
+        text = "Nutritional values"
+    )
+
+    Row(modifier = Modifier.padding(bottom = 8.dp)) {
+        UnitDropdown(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 4.dp),
+            unit = nutritionalValues.unit,
+            units = NutritionalValueUnit.entries,
+            onValueChange = {
+                updateNutritionalValue(
+                    nutritionalValues.copy(
+                        unit = it as? NutritionalValueUnit ?: NutritionalValueUnit.UNSPECIFIED
+                    )
+                )
+            }
+        )
+
+        TextField(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 4.dp),
+            value = nutritionalValues.energyValueKcal,
+            onValueChange = {
+                updateNutritionalValue(
+                    nutritionalValues.copy(energyValueKcal = it)
+                )
+            },
+            label = { Text("Energy value (kcal)") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+    }
+
+    Row(modifier = Modifier.padding(bottom = 8.dp)) {
+        TextField(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 4.dp),
+            value = nutritionalValues.fat,
+            onValueChange = {
+                updateNutritionalValue(
+                    nutritionalValues.copy(fat = it)
+                )
+            },
+            label = { Text("Fat") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        TextField(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 4.dp),
+            value = nutritionalValues.saturatedFat,
+            onValueChange = {
+                updateNutritionalValue(
+                    nutritionalValues.copy(saturatedFat = it)
+                )
+            },
+            label = { Text("Saturated fat") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+    }
+
+    Row(modifier = Modifier.padding(bottom = 8.dp)) {
+        TextField(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 4.dp),
+            value = nutritionalValues.carbohydrate,
+            onValueChange = {
+                updateNutritionalValue(
+                    nutritionalValues.copy(carbohydrate = it)
+                )
+            },
+            label = { Text("Carbohydrate") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        TextField(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 4.dp),
+            value = nutritionalValues.carbohydrateSugars,
+            onValueChange = {
+                updateNutritionalValue(
+                    nutritionalValues.copy(carbohydrateSugars = it)
+                )
+            },
+            label = { Text("Sugars") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+    }
+
+    Row(modifier = Modifier.padding(bottom = 8.dp)) {
+        TextField(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 4.dp),
+            value = nutritionalValues.fibre,
+            onValueChange = {
+                updateNutritionalValue(
+                    nutritionalValues.copy(fibre = it)
+                )
+            },
+            label = { Text("Fibre") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        TextField(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 4.dp),
+            value = nutritionalValues.protein,
+            onValueChange = {
+                updateNutritionalValue(
+                    nutritionalValues.copy(protein = it)
+                )
+            },
+            label = { Text("Protein") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        TextField(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 4.dp),
+            value = nutritionalValues.salt,
+            onValueChange = {
+                updateNutritionalValue(
+                    nutritionalValues.copy(salt = it)
+                )
+            },
+            label = { Text("Salt") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
     }
 }
