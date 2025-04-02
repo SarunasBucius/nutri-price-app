@@ -5,9 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.sarunasbucius.nutriprice.core.model.NewProduct
 import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
 import com.github.sarunasbucius.nutriprice.core.model.NutritionalValueUnit
-import com.github.sarunasbucius.nutriprice.core.model.Product
 import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
@@ -39,7 +39,42 @@ data class NutritionalValueUi(
     val fibre: String = "",
     val protein: String = "",
     val salt: String = "",
-)
+) {
+    fun validate(): List<String> {
+        val errors = mutableListOf<String>()
+
+        fun validateNumericField(value: String, fieldName: String) {
+            if (value.isNotEmpty() && value.toDoubleOrNull() == null) {
+                errors.add("$fieldName must be a number")
+            }
+        }
+
+        validateNumericField(energyValueKcal, "Energy value (kcal)")
+        validateNumericField(fat, "Fat")
+        validateNumericField(saturatedFat, "Saturated fat")
+        validateNumericField(carbohydrate, "Carbohydrate")
+        validateNumericField(carbohydrateSugars, "Carbohydrate sugars")
+        validateNumericField(fibre, "Fibre")
+        validateNumericField(protein, "Protein")
+        validateNumericField(salt, "Salt")
+
+        return errors
+    }
+
+    fun toApiModel(): NutritionalValue {
+        return NutritionalValue(
+            unit = unit,
+            energyValueKcal = energyValueKcal.toDoubleOrNull(),
+            fat = fat.toDoubleOrNull(),
+            saturatedFat = saturatedFat.toDoubleOrNull(),
+            carbohydrate = carbohydrate.toDoubleOrNull(),
+            carbohydrateSugars = carbohydrateSugars.toDoubleOrNull(),
+            fibre = fibre.toDoubleOrNull(),
+            protein = protein.toDoubleOrNull(),
+            salt = salt.toDoubleOrNull()
+        )
+    }
+}
 
 @HiltViewModel
 class InsertProductViewModel @Inject constructor(
@@ -85,43 +120,26 @@ class InsertProductViewModel @Inject constructor(
             }
         }
 
-        val nv = uiState.nutritionalValues
+        errors.addAll(uiState.nutritionalValues.validate())
+
         validateNumericField(uiState.price, "Price")
         validateNumericField(uiState.amount, "Amount")
-        validateNumericField(nv.energyValueKcal, "Energy value (kcal)")
-        validateNumericField(nv.fat, "Fat")
-        validateNumericField(nv.saturatedFat, "Saturated fat")
-        validateNumericField(nv.carbohydrate, "Carbohydrate")
-        validateNumericField(nv.carbohydrateSugars, "Carbohydrate sugars")
-        validateNumericField(nv.fibre, "Fibre")
-        validateNumericField(nv.protein, "Protein")
-        validateNumericField(nv.salt, "Salt")
 
         uiState = uiState.copy(errors = errors)
         if (errors.isNotEmpty()) {
             return
         }
 
-        val product = Product(
+        val newProduct = NewProduct(
             name = uiState.productName,
             price = uiState.price.toDoubleOrNull(),
             amount = uiState.amount.toDoubleOrNull(),
             unit = uiState.unit,
             notes = uiState.notes,
-            nutritionalValues = NutritionalValue(
-                unit = uiState.nutritionalValues.unit,
-                energyValueKcal = nv.energyValueKcal.toDoubleOrNull(),
-                fat = nv.fat.toDoubleOrNull(),
-                saturatedFat = nv.saturatedFat.toDoubleOrNull(),
-                carbohydrate = nv.carbohydrate.toDoubleOrNull(),
-                carbohydrateSugars = nv.carbohydrateSugars.toDoubleOrNull(),
-                fibre = nv.fibre.toDoubleOrNull(),
-                protein = nv.protein.toDoubleOrNull(),
-                salt = nv.salt.toDoubleOrNull()
-            ),
+            nutritionalValues = uiState.nutritionalValues.toApiModel(),
         )
         viewModelScope.launch(ioDispatcher) {
-            val result = nutriPriceClient.insertProduct(product)
+            val result = nutriPriceClient.insertProduct(newProduct)
             result.onSuccess {
                 onProductInserted()
             }.onError {
