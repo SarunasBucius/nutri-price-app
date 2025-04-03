@@ -79,13 +79,13 @@ class EditProductViewModel @Inject constructor(
         uiState = uiState.copy(productName = name)
     }
 
-    fun updatePurchasedProduct(index: Int, update: (PurchasedProduct) -> PurchasedProduct) {
+    fun updatePurchaseDetails(index: Int, purchase: PurchasedProduct) {
         if (index < 0 || index >= uiState.purchasedProducts.size) {
             Log.e("EditProductViewModel", "Invalid index: $index")
             return
         }
 
-        uiState.purchasedProducts[index] = update(uiState.purchasedProducts[index])
+        uiState.purchasedProducts[index] = purchase
     }
 
     fun updateNutritionalValue(nutritionalValue: NutritionalValueUi) {

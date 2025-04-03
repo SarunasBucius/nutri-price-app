@@ -10,26 +10,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.github.sarunasbucius.nutriprice.core.design.component.UnitDropdown
 import com.github.sarunasbucius.nutriprice.core.design.theme.CustomRed
-import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 import com.github.sarunasbucius.nutriprice.feature.common.components.NutritionalValueInput
-import com.github.sarunasbucius.nutriprice.feature.common.model.PurchasedProduct
+import com.github.sarunasbucius.nutriprice.feature.common.components.ProductNameInput
+import com.github.sarunasbucius.nutriprice.feature.common.components.PurchaseInput
 
 // TODO some sections are exactly same as InsertProductScreen, refactor
 @Composable
@@ -48,7 +43,7 @@ fun EditProductScreen(editProductViewModel: EditProductViewModel = hiltViewModel
             .padding(16.dp)
             .padding(bottom = WindowInsets.ime.asPaddingValues().calculateBottomPadding())
     ) {
-        EditProductName(
+        ProductNameInput(
             productName = uiState.productName,
             updateProductName = editProductViewModel::updateProductName
         )
@@ -57,13 +52,14 @@ fun EditProductScreen(editProductViewModel: EditProductViewModel = hiltViewModel
             modifier = Modifier
                 .padding(8.dp)
                 .align(Alignment.CenterHorizontally),
-            text = "Purchases"
+            text = "Purchase details"
         )
         uiState.purchasedProducts.forEachIndexed { index, purchasedProduct ->
-            EditPurchase(
+            PurchaseInput(
                 purchase = purchasedProduct,
-                index = index,
-                updatePurchasedProduct = editProductViewModel::updatePurchasedProduct,
+                updatePurchasedProduct = {
+                    editProductViewModel.updatePurchaseDetails(index, it)
+                }
             )
         }
 
@@ -98,63 +94,5 @@ fun EditProductScreen(editProductViewModel: EditProductViewModel = hiltViewModel
     }
 }
 
-@Composable
-fun EditProductName(productName: String, updateProductName: (String) -> Unit) {
-    TextField(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-        value = productName,
-        onValueChange = { updateProductName(it) },
-        label = { Text("Product name") },
-        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-    )
-}
 
-@Composable
-fun EditPurchase(
-    purchase: PurchasedProduct,
-    index: Int,
-    updatePurchasedProduct: (index: Int, update: (PurchasedProduct) -> PurchasedProduct) -> Unit
-) {
-    Row(modifier = Modifier.padding(bottom = 8.dp)) {
-        TextField(
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 8.dp),
-            value = purchase.price,
-            onValueChange = { updatePurchasedProduct(index) { product -> product.copy(price = it) } },
-            label = { Text("Price") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-        TextField(
-            modifier = Modifier.weight(1f),
-            value = purchase.amount,
-            onValueChange = { updatePurchasedProduct(index) { product -> product.copy(amount = it) } },
-            label = { Text("Amount") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
 
-        UnitDropdown(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 8.dp),
-            unit = purchase.unit,
-            onValueChange = {
-                updatePurchasedProduct(index) { product ->
-                    product.copy(
-                        unit = it as? QuantityUnit ?: QuantityUnit.UNSPECIFIED
-                    )
-                }
-            }
-        )
-    }
-    TextField(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
-        value = purchase.notes,
-        onValueChange = { updatePurchasedProduct(index) { product -> product.copy(notes = it) } },
-        label = { Text("Notes") },
-    )
-}

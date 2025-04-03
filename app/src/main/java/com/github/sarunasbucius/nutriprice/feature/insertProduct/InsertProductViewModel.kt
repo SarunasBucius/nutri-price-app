@@ -6,11 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.sarunasbucius.nutriprice.core.model.NewProduct
-import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceClient
 import com.github.sarunasbucius.nutriprice.feature.common.model.NutritionalValueUi
+import com.github.sarunasbucius.nutriprice.feature.common.model.PurchasedProduct
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,10 +20,7 @@ import javax.inject.Inject
 
 data class InsertProductUiState(
     val productName: String = "",
-    val price: String = "",
-    val amount: String = "",
-    val unit: QuantityUnit = QuantityUnit.UNSPECIFIED,
-    val notes: String = "",
+    val purchaseDetails: PurchasedProduct = PurchasedProduct(),
     val nutritionalValues: NutritionalValueUi = NutritionalValueUi(),
     val errors: List<String> = emptyList(),
 )
@@ -40,20 +37,8 @@ class InsertProductViewModel @Inject constructor(
         uiState = uiState.copy(productName = name)
     }
 
-    fun updatePrice(price: String) {
-        uiState = uiState.copy(price = price)
-    }
-
-    fun updateAmount(amount: String) {
-        uiState = uiState.copy(amount = amount)
-    }
-
-    fun updateUnit(unit: QuantityUnit) {
-        uiState = uiState.copy(unit = unit)
-    }
-
-    fun updateNotes(notes: String) {
-        uiState = uiState.copy(notes = notes)
+    fun updatePurchaseDetails(purchasedProduct: PurchasedProduct) {
+        uiState = uiState.copy(purchaseDetails = purchasedProduct)
     }
 
     fun updateNutritionalValue(nutritionalValue: NutritionalValueUi) {
@@ -74,8 +59,8 @@ class InsertProductViewModel @Inject constructor(
 
         errors.addAll(uiState.nutritionalValues.validate())
 
-        validateNumericField(uiState.price, "Price")
-        validateNumericField(uiState.amount, "Amount")
+        validateNumericField(uiState.purchaseDetails.price, "Price")
+        validateNumericField(uiState.purchaseDetails.amount, "Amount")
 
         uiState = uiState.copy(errors = errors)
         if (errors.isNotEmpty()) {
@@ -84,10 +69,10 @@ class InsertProductViewModel @Inject constructor(
 
         val newProduct = NewProduct(
             name = uiState.productName,
-            price = uiState.price.toDoubleOrNull(),
-            amount = uiState.amount.toDoubleOrNull(),
-            unit = uiState.unit,
-            notes = uiState.notes,
+            price = uiState.purchaseDetails.price.toDoubleOrNull(),
+            amount = uiState.purchaseDetails.amount.toDoubleOrNull(),
+            unit = uiState.purchaseDetails.unit,
+            notes = uiState.purchaseDetails.notes,
             nutritionalValues = uiState.nutritionalValues.toApiModel(),
         )
         viewModelScope.launch(ioDispatcher) {
