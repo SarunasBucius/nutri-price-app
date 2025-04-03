@@ -10,7 +10,7 @@ import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceClient
 import com.github.sarunasbucius.nutriprice.feature.common.model.NutritionalValueUi
-import com.github.sarunasbucius.nutriprice.feature.common.model.PurchasedProduct
+import com.github.sarunasbucius.nutriprice.feature.common.model.PurchaseDetailsUi
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 data class InsertProductUiState(
     val productName: String = "",
-    val purchaseDetails: PurchasedProduct = PurchasedProduct(),
+    val purchaseDetails: PurchaseDetailsUi = PurchaseDetailsUi(),
     val nutritionalValues: NutritionalValueUi = NutritionalValueUi(),
     val errors: List<String> = emptyList(),
 )
@@ -37,7 +37,7 @@ class InsertProductViewModel @Inject constructor(
         uiState = uiState.copy(productName = name)
     }
 
-    fun updatePurchaseDetails(purchasedProduct: PurchasedProduct) {
+    fun updatePurchaseDetails(purchasedProduct: PurchaseDetailsUi) {
         uiState = uiState.copy(purchaseDetails = purchasedProduct)
     }
 

@@ -15,7 +15,7 @@ import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceClient
 import com.github.sarunasbucius.nutriprice.feature.common.model.NutritionalValueUi
-import com.github.sarunasbucius.nutriprice.feature.common.model.PurchasedProduct
+import com.github.sarunasbucius.nutriprice.feature.common.model.PurchaseDetailsUi
 import com.skydoves.sandwich.message
 import com.skydoves.sandwich.onFailure
 import com.skydoves.sandwich.onSuccess
@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 data class EditProductUiState(
     val productName: String = "",
-    val purchasedProducts: SnapshotStateList<PurchasedProduct> = mutableStateListOf(),
+    val purchasedProducts: SnapshotStateList<PurchaseDetailsUi> = mutableStateListOf(),
     val nutritionalValues: NutritionalValueUi = NutritionalValueUi(),
     val errors: SnapshotStateList<String> = mutableStateListOf(),
 ) {
@@ -43,7 +43,7 @@ data class EditProductUiState(
             return EditProductUiState(
                 productName = product.name,
                 purchasedProducts = product.purchases.map {
-                    PurchasedProduct.fromApiModel(it)
+                    PurchaseDetailsUi.fromApiModel(it)
                 }.toMutableStateList(),
                 nutritionalValues = NutritionalValueUi.fromApiModel(product.nutritionalValues)
             )
@@ -79,7 +79,7 @@ class EditProductViewModel @Inject constructor(
         uiState = uiState.copy(productName = name)
     }
 
-    fun updatePurchaseDetails(index: Int, purchase: PurchasedProduct) {
+    fun updatePurchaseDetails(index: Int, purchase: PurchaseDetailsUi) {
         if (index < 0 || index >= uiState.purchasedProducts.size) {
             Log.e("EditProductViewModel", "Invalid index: $index")
             return

@@ -12,11 +12,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.github.sarunasbucius.nutriprice.core.design.component.UnitDropdown
 import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
-import com.github.sarunasbucius.nutriprice.feature.common.model.PurchasedProduct
+import com.github.sarunasbucius.nutriprice.feature.common.model.PurchaseDetailsUi
 
 @Composable
 fun PurchaseInput(
-    purchase: PurchasedProduct, updatePurchasedProduct: (PurchasedProduct) -> Unit
+    purchase: PurchaseDetailsUi, updatePurchasedProduct: (PurchaseDetailsUi) -> Unit
 ) {
     Row(modifier = Modifier.padding(bottom = 8.dp)) {
         TextField(

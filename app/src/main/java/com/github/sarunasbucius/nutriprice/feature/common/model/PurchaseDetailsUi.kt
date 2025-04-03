@@ -3,7 +3,7 @@ package com.github.sarunasbucius.nutriprice.feature.common.model
 import com.github.sarunasbucius.nutriprice.core.model.PurchaseDetails
 import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 
-data class PurchasedProduct(
+data class PurchaseDetailsUi(
     val price: String = "",
     val notes: String = "",
     val amount: String = "",
@@ -30,8 +30,8 @@ data class PurchasedProduct(
     }
 
     companion object {
-        fun fromApiModel(purchaseDetails: PurchaseDetails): PurchasedProduct {
-            return PurchasedProduct(
+        fun fromApiModel(purchaseDetails: PurchaseDetails): PurchaseDetailsUi {
+            return PurchaseDetailsUi(
                 price = purchaseDetails.price?.toString() ?: "",
                 notes = purchaseDetails.notes,
                 amount = purchaseDetails.amount?.toString() ?: "",
