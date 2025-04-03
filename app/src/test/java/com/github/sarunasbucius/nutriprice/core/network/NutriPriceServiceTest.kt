@@ -1,7 +1,9 @@
 package com.github.sarunasbucius.nutriprice.core.network
 
+import com.github.sarunasbucius.nutriprice.core.model.NewProduct
 import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
-import com.github.sarunasbucius.nutriprice.core.model.Product
+import com.github.sarunasbucius.nutriprice.core.model.NutritionalValueUnit
+import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceService
 import com.skydoves.sandwich.ApiResponse
 import kotlinx.coroutines.test.runTest
@@ -32,14 +34,14 @@ class NutriPriceServiceTest : ApiAbstract<NutriPriceService>() {
     fun insertProductTest() = runTest {
         enqueueResponse("""{"message": "Product inserted successfully"}""")
         val response = service.insertProduct(
-            Product(
+            NewProduct(
                 name = "Apple",
                 price = null,
                 amount = null,
-                unit = "",
+                unit = QuantityUnit.UNSPECIFIED,
                 notes = "",
                 nutritionalValues = NutritionalValue(
-                    unit = "",
+                    unit = NutritionalValueUnit.UNSPECIFIED,
                     energyValueKcal = null,
                     fat = null,
                     saturatedFat = null,
