@@ -3,6 +3,7 @@ package com.github.sarunasbucius.nutriprice.core.network
 import com.github.sarunasbucius.nutriprice.core.model.NewProduct
 import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
 import com.github.sarunasbucius.nutriprice.core.model.NutritionalValueUnit
+import com.github.sarunasbucius.nutriprice.core.model.PurchaseDetails
 import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceService
 import com.skydoves.sandwich.ApiResponse
@@ -36,10 +37,12 @@ class NutriPriceServiceTest : ApiAbstract<NutriPriceService>() {
         val response = service.insertProduct(
             NewProduct(
                 name = "Apple",
-                price = null,
-                amount = null,
-                unit = QuantityUnit.UNSPECIFIED,
-                notes = "",
+                purchaseDetails = PurchaseDetails(
+                    price = null,
+                    amount = null,
+                    unit = QuantityUnit.UNSPECIFIED,
+                    notes = "",
+                ),
                 nutritionalValues = NutritionalValue(
                     unit = NutritionalValueUnit.UNSPECIFIED,
                     energyValueKcal = null,

@@ -5,10 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class NewProduct(
     val name: String,
-    val price: Double?,
-    val amount: Double?,
-    val unit: QuantityUnit?,
-    val notes: String,
+    val purchaseDetails: PurchaseDetails,
     val nutritionalValues: NutritionalValue
 )
 

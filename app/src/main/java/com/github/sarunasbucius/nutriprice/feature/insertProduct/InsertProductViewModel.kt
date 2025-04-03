@@ -69,10 +69,7 @@ class InsertProductViewModel @Inject constructor(
 
         val newProduct = NewProduct(
             name = uiState.productName,
-            price = uiState.purchaseDetails.price.toDoubleOrNull(),
-            amount = uiState.purchaseDetails.amount.toDoubleOrNull(),
-            unit = uiState.purchaseDetails.unit,
-            notes = uiState.purchaseDetails.notes,
+            purchaseDetails = uiState.purchaseDetails.toApiModel(),
             nutritionalValues = uiState.nutritionalValues.toApiModel(),
         )
         viewModelScope.launch(ioDispatcher) {
