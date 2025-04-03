@@ -26,10 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.sarunasbucius.nutriprice.core.design.component.UnitDropdown
 import com.github.sarunasbucius.nutriprice.core.design.theme.CustomRed
-import com.github.sarunasbucius.nutriprice.core.model.NutritionalValueUnit
 import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
-import com.github.sarunasbucius.nutriprice.feature.common.model.NutritionalValueUi
+import com.github.sarunasbucius.nutriprice.feature.common.components.NutritionalValueInput
 import com.github.sarunasbucius.nutriprice.feature.common.model.PurchasedProduct
 
 // TODO some sections are exactly same as InsertProductScreen, refactor
@@ -68,7 +67,7 @@ fun EditProductScreen(editProductViewModel: EditProductViewModel = hiltViewModel
             )
         }
 
-        NutritionalValueSection(
+        NutritionalValueInput(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             nutritionalValues = uiState.nutritionalValues,
             updateNutritionalValue = editProductViewModel::updateNutritionalValue
@@ -158,152 +157,4 @@ fun EditPurchase(
         onValueChange = { updatePurchasedProduct(index) { product -> product.copy(notes = it) } },
         label = { Text("Notes") },
     )
-}
-
-@Composable
-fun NutritionalValueSection(
-    modifier: Modifier = Modifier,
-    nutritionalValues: NutritionalValueUi,
-    updateNutritionalValue: (NutritionalValueUi) -> Unit
-) {
-    Text(
-        modifier = modifier
-            .padding(8.dp),
-        text = "Nutritional values"
-    )
-
-    Row(modifier = Modifier.padding(bottom = 8.dp)) {
-        UnitDropdown(
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 4.dp),
-            unit = nutritionalValues.unit,
-            units = NutritionalValueUnit.entries,
-            onValueChange = {
-                updateNutritionalValue(
-                    nutritionalValues.copy(
-                        unit = it as? NutritionalValueUnit ?: NutritionalValueUnit.UNSPECIFIED
-                    )
-                )
-            }
-        )
-
-        TextField(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 4.dp),
-            value = nutritionalValues.energyValueKcal,
-            onValueChange = {
-                updateNutritionalValue(
-                    nutritionalValues.copy(energyValueKcal = it)
-                )
-            },
-            label = { Text("Energy value (kcal)") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-    }
-
-    Row(modifier = Modifier.padding(bottom = 8.dp)) {
-        TextField(
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 4.dp),
-            value = nutritionalValues.fat,
-            onValueChange = {
-                updateNutritionalValue(
-                    nutritionalValues.copy(fat = it)
-                )
-            },
-            label = { Text("Fat") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-
-        TextField(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 4.dp),
-            value = nutritionalValues.saturatedFat,
-            onValueChange = {
-                updateNutritionalValue(
-                    nutritionalValues.copy(saturatedFat = it)
-                )
-            },
-            label = { Text("Saturated fat") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-    }
-
-    Row(modifier = Modifier.padding(bottom = 8.dp)) {
-        TextField(
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 4.dp),
-            value = nutritionalValues.carbohydrate,
-            onValueChange = {
-                updateNutritionalValue(
-                    nutritionalValues.copy(carbohydrate = it)
-                )
-            },
-            label = { Text("Carbohydrate") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-
-        TextField(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 4.dp),
-            value = nutritionalValues.carbohydrateSugars,
-            onValueChange = {
-                updateNutritionalValue(
-                    nutritionalValues.copy(carbohydrateSugars = it)
-                )
-            },
-            label = { Text("Sugars") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-    }
-
-    Row(modifier = Modifier.padding(bottom = 8.dp)) {
-        TextField(
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 4.dp),
-            value = nutritionalValues.fibre,
-            onValueChange = {
-                updateNutritionalValue(
-                    nutritionalValues.copy(fibre = it)
-                )
-            },
-            label = { Text("Fibre") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-
-        TextField(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 4.dp),
-            value = nutritionalValues.protein,
-            onValueChange = {
-                updateNutritionalValue(
-                    nutritionalValues.copy(protein = it)
-                )
-            },
-            label = { Text("Protein") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-
-        TextField(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 4.dp),
-            value = nutritionalValues.salt,
-            onValueChange = {
-                updateNutritionalValue(
-                    nutritionalValues.copy(salt = it)
-                )
-            },
-            label = { Text("Salt") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-    }
 }
