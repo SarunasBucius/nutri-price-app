@@ -24,7 +24,7 @@ data class PurchaseDetails(
     val price: Double?,
     val amount: Double?,
     val unit: QuantityUnit?,
-    val notes: String
+    val notes: String = ""
 )
 
 @Serializable

@@ -20,6 +20,7 @@ import com.github.sarunasbucius.nutriprice.core.design.component.UnitDropdown
 import com.github.sarunasbucius.nutriprice.core.model.NutritionalValueUnit
 import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
+import com.github.sarunasbucius.nutriprice.feature.common.model.NutritionalValueUi
 
 @Composable
 fun InsertProductScreen(

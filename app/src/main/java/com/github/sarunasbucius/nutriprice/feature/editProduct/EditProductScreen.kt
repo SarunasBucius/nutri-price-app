@@ -29,7 +29,8 @@ import com.github.sarunasbucius.nutriprice.core.design.theme.CustomRed
 import com.github.sarunasbucius.nutriprice.core.model.NutritionalValueUnit
 import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
-import com.github.sarunasbucius.nutriprice.feature.insertProduct.NutritionalValueUi
+import com.github.sarunasbucius.nutriprice.feature.common.model.NutritionalValueUi
+import com.github.sarunasbucius.nutriprice.feature.common.model.PurchasedProduct
 
 // TODO some sections are exactly same as InsertProductScreen, refactor
 @Composable

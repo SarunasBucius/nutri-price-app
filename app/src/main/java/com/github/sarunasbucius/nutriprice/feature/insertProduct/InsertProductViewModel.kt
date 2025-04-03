@@ -6,12 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.sarunasbucius.nutriprice.core.model.NewProduct
-import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
-import com.github.sarunasbucius.nutriprice.core.model.NutritionalValueUnit
 import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceClient
+import com.github.sarunasbucius.nutriprice.feature.common.model.NutritionalValueUi
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,53 +27,6 @@ data class InsertProductUiState(
     val nutritionalValues: NutritionalValueUi = NutritionalValueUi(),
     val errors: List<String> = emptyList(),
 )
-
-data class NutritionalValueUi(
-    val unit: NutritionalValueUnit = NutritionalValueUnit.UNSPECIFIED,
-    val energyValueKcal: String = "",
-    val fat: String = "",
-    val saturatedFat: String = "",
-    val carbohydrate: String = "",
-    val carbohydrateSugars: String = "",
-    val fibre: String = "",
-    val protein: String = "",
-    val salt: String = "",
-) {
-    fun validate(): List<String> {
-        val errors = mutableListOf<String>()
-
-        fun validateNumericField(value: String, fieldName: String) {
-            if (value.isNotEmpty() && value.toDoubleOrNull() == null) {
-                errors.add("$fieldName must be a number")
-            }
-        }
-
-        validateNumericField(energyValueKcal, "Energy value (kcal)")
-        validateNumericField(fat, "Fat")
-        validateNumericField(saturatedFat, "Saturated fat")
-        validateNumericField(carbohydrate, "Carbohydrate")
-        validateNumericField(carbohydrateSugars, "Carbohydrate sugars")
-        validateNumericField(fibre, "Fibre")
-        validateNumericField(protein, "Protein")
-        validateNumericField(salt, "Salt")
-
-        return errors
-    }
-
-    fun toApiModel(): NutritionalValue {
-        return NutritionalValue(
-            unit = unit,
-            energyValueKcal = energyValueKcal.toDoubleOrNull(),
-            fat = fat.toDoubleOrNull(),
-            saturatedFat = saturatedFat.toDoubleOrNull(),
-            carbohydrate = carbohydrate.toDoubleOrNull(),
-            carbohydrateSugars = carbohydrateSugars.toDoubleOrNull(),
-            fibre = fibre.toDoubleOrNull(),
-            protein = protein.toDoubleOrNull(),
-            salt = salt.toDoubleOrNull()
-        )
-    }
-}
 
 @HiltViewModel
 class InsertProductViewModel @Inject constructor(
