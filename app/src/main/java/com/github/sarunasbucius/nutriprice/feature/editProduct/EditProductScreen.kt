@@ -26,7 +26,6 @@ import com.github.sarunasbucius.nutriprice.feature.common.components.Nutritional
 import com.github.sarunasbucius.nutriprice.feature.common.components.ProductNameInput
 import com.github.sarunasbucius.nutriprice.feature.common.components.PurchaseInput
 
-// TODO some sections are exactly same as InsertProductScreen, refactor
 @Composable
 fun EditProductScreen(editProductViewModel: EditProductViewModel = hiltViewModel()) {
     val uiState = editProductViewModel.uiState
