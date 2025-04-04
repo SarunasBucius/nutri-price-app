@@ -5,13 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
-import com.github.sarunasbucius.nutriprice.core.model.NutritionalValueUnit
-import com.github.sarunasbucius.nutriprice.core.model.Product
-import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
+import com.github.sarunasbucius.nutriprice.core.model.NewProduct
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceClient
+import com.github.sarunasbucius.nutriprice.feature.common.model.NutritionalValueUi
+import com.github.sarunasbucius.nutriprice.feature.common.model.PurchaseDetailsUi
 import com.skydoves.sandwich.onError
 import com.skydoves.sandwich.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,25 +20,30 @@ import javax.inject.Inject
 
 data class InsertProductUiState(
     val productName: String = "",
-    val price: String = "",
-    val amount: String = "",
-    val unit: QuantityUnit = QuantityUnit.UNSPECIFIED,
-    val notes: String = "",
+    val purchaseDetails: PurchaseDetailsUi = PurchaseDetailsUi(),
     val nutritionalValues: NutritionalValueUi = NutritionalValueUi(),
     val errors: List<String> = emptyList(),
-)
+) {
+    fun toApiModel(): NewProduct {
+        return NewProduct(
+            name = productName,
+            purchaseDetails = purchaseDetails.toApiModel(),
+            nutritionalValues = nutritionalValues.toApiModel(),
+        )
+    }
 
-data class NutritionalValueUi(
-    val unit: NutritionalValueUnit = NutritionalValueUnit.UNSPECIFIED,
-    val energyValueKcal: String = "",
-    val fat: String = "",
-    val saturatedFat: String = "",
-    val carbohydrate: String = "",
-    val carbohydrateSugars: String = "",
-    val fibre: String = "",
-    val protein: String = "",
-    val salt: String = "",
-)
+    fun validate(): List<String> {
+        val errors = mutableListOf<String>()
+        if (productName.isEmpty()) {
+            errors.add("Name cannot be empty")
+        }
+
+        errors.addAll(nutritionalValues.validate())
+        errors.addAll(purchaseDetails.validate())
+
+        return errors
+    }
+}
 
 @HiltViewModel
 class InsertProductViewModel @Inject constructor(
@@ -53,20 +57,8 @@ class InsertProductViewModel @Inject constructor(
         uiState = uiState.copy(productName = name)
     }
 
-    fun updatePrice(price: String) {
-        uiState = uiState.copy(price = price)
-    }
-
-    fun updateAmount(amount: String) {
-        uiState = uiState.copy(amount = amount)
-    }
-
-    fun updateUnit(unit: QuantityUnit) {
-        uiState = uiState.copy(unit = unit)
-    }
-
-    fun updateNotes(notes: String) {
-        uiState = uiState.copy(notes = notes)
+    fun updatePurchaseDetails(purchasedProduct: PurchaseDetailsUi) {
+        uiState = uiState.copy(purchaseDetails = purchasedProduct)
     }
 
     fun updateNutritionalValue(nutritionalValue: NutritionalValueUi) {
@@ -74,54 +66,14 @@ class InsertProductViewModel @Inject constructor(
     }
 
     fun insertProduct(onProductInserted: () -> Unit) {
-        val errors = mutableListOf<String>()
-        if (uiState.productName.isEmpty()) {
-            errors.add("Name cannot be empty")
-        }
-
-        fun validateNumericField(value: String, fieldName: String) {
-            if (value.isNotEmpty() && value.toDoubleOrNull() == null) {
-                errors.add("$fieldName must be a number")
-            }
-        }
-
-        val nv = uiState.nutritionalValues
-        validateNumericField(uiState.price, "Price")
-        validateNumericField(uiState.amount, "Amount")
-        validateNumericField(nv.energyValueKcal, "Energy value (kcal)")
-        validateNumericField(nv.fat, "Fat")
-        validateNumericField(nv.saturatedFat, "Saturated fat")
-        validateNumericField(nv.carbohydrate, "Carbohydrate")
-        validateNumericField(nv.carbohydrateSugars, "Carbohydrate sugars")
-        validateNumericField(nv.fibre, "Fibre")
-        validateNumericField(nv.protein, "Protein")
-        validateNumericField(nv.salt, "Salt")
-
+        val errors = uiState.validate()
         uiState = uiState.copy(errors = errors)
         if (errors.isNotEmpty()) {
             return
         }
 
-        val product = Product(
-            name = uiState.productName,
-            price = uiState.price.toDoubleOrNull(),
-            amount = uiState.amount.toDoubleOrNull(),
-            unit = uiState.unit,
-            notes = uiState.notes,
-            nutritionalValues = NutritionalValue(
-                unit = uiState.nutritionalValues.unit,
-                energyValueKcal = nv.energyValueKcal.toDoubleOrNull(),
-                fat = nv.fat.toDoubleOrNull(),
-                saturatedFat = nv.saturatedFat.toDoubleOrNull(),
-                carbohydrate = nv.carbohydrate.toDoubleOrNull(),
-                carbohydrateSugars = nv.carbohydrateSugars.toDoubleOrNull(),
-                fibre = nv.fibre.toDoubleOrNull(),
-                protein = nv.protein.toDoubleOrNull(),
-                salt = nv.salt.toDoubleOrNull()
-            ),
-        )
         viewModelScope.launch(ioDispatcher) {
-            val result = nutriPriceClient.insertProduct(product)
+            val result = nutriPriceClient.insertProduct(uiState.toApiModel())
             result.onSuccess {
                 onProductInserted()
             }.onError {
