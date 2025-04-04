@@ -38,6 +38,21 @@ data class EditProductUiState(
         )
     }
 
+    fun validate(): SnapshotStateList<String> {
+        val errors = mutableStateListOf<String>()
+        if (productName.isEmpty()) {
+            errors.add("Name cannot be empty")
+        }
+
+        errors.addAll(nutritionalValues.validate())
+
+        for (product in purchasedProducts) {
+            errors.addAll(product.validate())
+        }
+
+        return errors
+    }
+
     companion object {
         fun fromApiModel(product: Product): EditProductUiState {
             return EditProductUiState(
@@ -50,7 +65,6 @@ data class EditProductUiState(
         }
     }
 }
-
 
 @HiltViewModel
 class EditProductViewModel @Inject constructor(
@@ -105,17 +119,7 @@ class EditProductViewModel @Inject constructor(
     }
 
     fun insertProduct(onProductInserted: () -> Unit) {
-        val errors = mutableStateListOf<String>()
-        if (uiState.productName.isEmpty()) {
-            errors.add("Name cannot be empty")
-        }
-
-        errors.addAll(uiState.nutritionalValues.validate())
-
-        for (product in uiState.purchasedProducts) {
-            errors.addAll(product.validate())
-        }
-
+        val errors = uiState.validate()
         uiState = uiState.copy(errors = errors)
         if (errors.isNotEmpty()) {
             return

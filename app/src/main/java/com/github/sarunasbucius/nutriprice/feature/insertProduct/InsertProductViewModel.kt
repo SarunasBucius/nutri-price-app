@@ -23,7 +23,27 @@ data class InsertProductUiState(
     val purchaseDetails: PurchaseDetailsUi = PurchaseDetailsUi(),
     val nutritionalValues: NutritionalValueUi = NutritionalValueUi(),
     val errors: List<String> = emptyList(),
-)
+) {
+    fun toApiModel(): NewProduct {
+        return NewProduct(
+            name = productName,
+            purchaseDetails = purchaseDetails.toApiModel(),
+            nutritionalValues = nutritionalValues.toApiModel(),
+        )
+    }
+
+    fun validate(): List<String> {
+        val errors = mutableListOf<String>()
+        if (productName.isEmpty()) {
+            errors.add("Name cannot be empty")
+        }
+
+        errors.addAll(nutritionalValues.validate())
+        errors.addAll(purchaseDetails.validate())
+
+        return errors
+    }
+}
 
 @HiltViewModel
 class InsertProductViewModel @Inject constructor(
@@ -46,34 +66,14 @@ class InsertProductViewModel @Inject constructor(
     }
 
     fun insertProduct(onProductInserted: () -> Unit) {
-        val errors = mutableListOf<String>()
-        if (uiState.productName.isEmpty()) {
-            errors.add("Name cannot be empty")
-        }
-
-        fun validateNumericField(value: String, fieldName: String) {
-            if (value.isNotEmpty() && value.toDoubleOrNull() == null) {
-                errors.add("$fieldName must be a number")
-            }
-        }
-
-        errors.addAll(uiState.nutritionalValues.validate())
-
-        validateNumericField(uiState.purchaseDetails.price, "Price")
-        validateNumericField(uiState.purchaseDetails.amount, "Amount")
-
+        val errors = uiState.validate()
         uiState = uiState.copy(errors = errors)
         if (errors.isNotEmpty()) {
             return
         }
 
-        val newProduct = NewProduct(
-            name = uiState.productName,
-            purchaseDetails = uiState.purchaseDetails.toApiModel(),
-            nutritionalValues = uiState.nutritionalValues.toApiModel(),
-        )
         viewModelScope.launch(ioDispatcher) {
-            val result = nutriPriceClient.insertProduct(newProduct)
+            val result = nutriPriceClient.insertProduct(uiState.toApiModel())
             result.onSuccess {
                 onProductInserted()
             }.onError {
