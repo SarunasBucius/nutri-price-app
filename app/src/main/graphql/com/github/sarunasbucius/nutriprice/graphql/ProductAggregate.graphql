@@ -1,0 +1,29 @@
+query ProductAggregate($id: ID!) {
+    productAggregate(id: $id) {
+        name
+        varieties {
+            varietyName
+            nutritionalValue {
+                id
+                unit
+                energyValueKcal
+                fat
+                saturatedFat
+                carbohydrate
+                carbohydrateSugars
+                fibre
+                protein
+                salt
+            }
+            purchases {
+                id
+                date
+                quantity
+                price
+                retailer
+                unit
+                notes
+            }
+        }
+    }
+}

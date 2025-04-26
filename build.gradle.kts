@@ -5,4 +5,5 @@ plugins {
     id("com.google.devtools.ksp") apply false
     id("com.google.dagger.hilt.android") version "2.54" apply false
     alias(libs.plugins.compose.compiler) apply false
+    alias(libs.plugins.kotlin.parcelize) apply false
 }
