@@ -1,7 +1,6 @@
 package com.github.sarunasbucius.nutriprice.feature.product
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -24,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,24 +33,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.github.sarunasbucius.nutriprice.core.design.component.NutriPriceCircularProgress
+import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 import com.github.sarunasbucius.nutriprice.graphql.ProductAggregateQuery
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductScreen(productViewModel: ProductViewModel = hiltViewModel()) {
-    if (productViewModel.uiState.isLoading) {
-        Box(modifier = Modifier.fillMaxSize()) { NutriPriceCircularProgress() }
-    } else {
-        ProductDetails(uiState = productViewModel.uiState) {
-            productViewModel.selectVariety(it)
+    PullToRefreshBox(
+        isRefreshing = productViewModel.uiState.isLoading,
+        onRefresh = { productViewModel.fetchProduct() }
+    ) {
+        if (!productViewModel.uiState.isLoading) {
+            ProductDetails(uiState = productViewModel.uiState) {
+                productViewModel.selectVariety(it)
+            }
         }
     }
 }
 
 @Composable
 fun ProductDetails(uiState: ProductAggregateUi, onVarietySelected: (String) -> Unit) {
-    currentComposeNavigator
+    val navigator = currentComposeNavigator
 
     Column(
         modifier = Modifier
@@ -75,7 +79,7 @@ fun ProductDetails(uiState: ProductAggregateUi, onVarietySelected: (String) -> U
         )
 
         Text(
-            text = "Product variation",
+            text = "Product variety",
             style = MaterialTheme.typography.labelSmall,
         )
         ProductVarietyDropdown(
@@ -86,7 +90,15 @@ fun ProductDetails(uiState: ProductAggregateUi, onVarietySelected: (String) -> U
 
         Icon(
             modifier = Modifier
-                .clickable(onClick = {}),
+                .clickable(onClick = {
+                    navigator.navigate(
+                        NutriPriceScreen.EditProductName(
+                            uiState.productId,
+                            uiState.productAggregate.name,
+                            uiState.selectedVariety.varietyName,
+                        )
+                    )
+                }),
             tint = MaterialTheme.colorScheme.primary,
             imageVector = Icons.Default.Edit,
             contentDescription = "Edit product details"
@@ -266,7 +278,7 @@ fun ProductVarietyDropdown(
             )
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = "Show variations"
+                contentDescription = "Show varieties"
             )
         }
         ExposedDropdownMenu(

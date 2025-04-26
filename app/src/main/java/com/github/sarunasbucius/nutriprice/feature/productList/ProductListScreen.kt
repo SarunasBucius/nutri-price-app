@@ -35,7 +35,7 @@ fun ProductListScreen(productListViewModel: ProductListViewModel = hiltViewModel
             productList.forEach {
                 Text(
                     modifier = Modifier.clickable(onClick = {
-                        composeNavigator.navigate(NutriPriceScreen.EditProduct(it.id))
+                        composeNavigator.navigate(NutriPriceScreen.Product(it.id))
                     }),
                     text = it.name
                 )

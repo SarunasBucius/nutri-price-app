@@ -30,7 +30,8 @@ data class ProductAggregateUi(
         null,
         emptyList()
     ),
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val productId: String
 )
 
 @HiltViewModel
@@ -40,15 +41,20 @@ class ProductViewModel @Inject constructor(
     private val navigation: AppComposeNavigator<NutriPriceScreen>,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    private val productId: String =
-        savedStateHandle["productId"] ?: ""
+    private val productId: String = savedStateHandle["productId"] ?: ""
 
-
-    var uiState by mutableStateOf(ProductAggregateUi())
+    var uiState by mutableStateOf(ProductAggregateUi(productId = productId))
         private set
 
     init {
+        fetchProduct()
+    }
+
+    fun fetchProduct() {
         viewModelScope.launch(ioDispatcher) {
+            uiState = uiState.copy(
+                isLoading = true
+            )
             val response = apolloClient.query(ProductAggregateQuery(productId)).execute()
             val data = response.data
             if (response.hasErrors() || data == null || data.productAggregate.varieties.isEmpty()) {

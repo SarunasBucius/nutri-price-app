@@ -1,0 +1,7 @@
+mutation UpdateProductName($id: ID!, $name: String!) {
+    updateProduct(id: $id, name: $name)
+}
+
+mutation UpdateVarietyName($oldName: String!, $varietyName: String!) {
+    updateVariety(oldName: $oldName, varietyName: $varietyName)
+}
