@@ -7,10 +7,18 @@ plugins {
     id("com.google.devtools.ksp")
     id("org.jetbrains.kotlin.plugin.serialization") version "2.1.0"
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.parcelize)
+    id("com.apollographql.apollo") version "4.1.1"
 }
 
 val localProperties = Properties().apply {
     load(rootProject.file("local.properties").inputStream())
+}
+
+apollo {
+    service("service") {
+        packageName.set("com.github.sarunasbucius.nutriprice.graphql")
+    }
 }
 
 android {
@@ -79,4 +87,6 @@ dependencies {
 
     implementation(libs.sandwich)
     implementation(libs.sandwich.retrofit)
+
+    implementation(libs.apollo.runtime)
 }

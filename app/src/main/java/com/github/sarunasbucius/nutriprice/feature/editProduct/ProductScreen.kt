@@ -1,0 +1,287 @@
+package com.github.sarunasbucius.nutriprice.feature.editProduct
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.sarunasbucius.nutriprice.core.design.component.NutriPriceCircularProgress
+import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
+import com.github.sarunasbucius.nutriprice.graphql.ProductAggregateQuery
+
+@Composable
+fun ProductScreen(productViewModel: ProductViewModel = hiltViewModel()) {
+    if (productViewModel.uiState.isLoading) {
+        Box(modifier = Modifier.fillMaxSize()) { NutriPriceCircularProgress() }
+    } else {
+        ProductDetails(uiState = productViewModel.uiState) {
+            productViewModel.selectVariety(it)
+        }
+    }
+}
+
+@Composable
+fun ProductDetails(uiState: ProductAggregateUi, onVarietySelected: (String) -> Unit) {
+    currentComposeNavigator
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+            .padding(bottom = WindowInsets.ime.asPaddingValues().calculateBottomPadding())
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(8.dp)
+                .align(Alignment.CenterHorizontally),
+            text = "Product details"
+        )
+
+        Text(
+            text = "Product name",
+            style = MaterialTheme.typography.labelSmall,
+        )
+        Text(
+            text = uiState.productAggregate.name
+        )
+
+        Text(
+            text = "Product variation",
+            style = MaterialTheme.typography.labelSmall,
+        )
+        ProductVarietyDropdown(
+            selectedVarietyName = uiState.selectedVariety.varietyName,
+            varieties = uiState.productAggregate.varieties,
+            onVarietySelected = onVarietySelected
+        )
+
+        Icon(
+            modifier = Modifier
+                .clickable(onClick = {}),
+            tint = MaterialTheme.colorScheme.primary,
+            imageVector = Icons.Default.Edit,
+            contentDescription = "Edit product details"
+        )
+
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(8.dp),
+            text = "Nutritional values"
+        )
+
+        if (uiState.selectedVariety.nutritionalValue != null) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                TextWithLabel(
+                    modifier = Modifier.weight(1f),
+                    label = "Unit",
+                    text = uiState.selectedVariety.nutritionalValue.unit
+                )
+                TextWithLabel(
+                    modifier = Modifier.weight(1f),
+                    label = "Energy value (kcal)",
+                    text = uiState.selectedVariety.nutritionalValue.energyValueKcal.toString()
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                TextWithLabel(
+                    modifier = Modifier.weight(1f),
+                    label = "Fat",
+                    text = uiState.selectedVariety.nutritionalValue.fat.toString()
+                )
+                TextWithLabel(
+                    modifier = Modifier.weight(1f),
+                    label = "Saturated fat",
+                    text = uiState.selectedVariety.nutritionalValue.saturatedFat.toString()
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                TextWithLabel(
+                    modifier = Modifier.weight(1f),
+                    label = "Carbohydrate",
+                    text = uiState.selectedVariety.nutritionalValue.carbohydrate.toString()
+                )
+                TextWithLabel(
+                    modifier = Modifier.weight(1f),
+                    label = "Sugars",
+                    text = uiState.selectedVariety.nutritionalValue.carbohydrateSugars.toString()
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                TextWithLabel(
+                    modifier = Modifier.weight(1f),
+                    label = "Fibre",
+                    text = uiState.selectedVariety.nutritionalValue.fibre.toString()
+                )
+                TextWithLabel(
+                    modifier = Modifier.weight(1f),
+                    label = "Protein",
+                    text = uiState.selectedVariety.nutritionalValue.protein.toString()
+                )
+                TextWithLabel(
+                    modifier = Modifier.weight(1f),
+                    label = "Salt",
+                    text = uiState.selectedVariety.nutritionalValue.salt.toString()
+                )
+            }
+
+            Icon(
+                modifier = Modifier
+                    .clickable(onClick = {}),
+                tint = MaterialTheme.colorScheme.primary,
+                imageVector = Icons.Default.Edit,
+                contentDescription = "Edit nutritional values"
+            )
+        } else {
+            Button(onClick = {}) {
+                Text(text = "Set nutritional values")
+            }
+        }
+
+        Text(
+            modifier = Modifier
+                .padding(8.dp)
+                .align(Alignment.CenterHorizontally),
+            text = "Purchase details"
+        )
+        uiState.selectedVariety.purchases.forEachIndexed { index, purchasedProduct ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                TextWithLabel(
+                    modifier = Modifier.weight(1f),
+                    label = "Date",
+                    text = purchasedProduct.date
+                )
+                TextWithLabel(
+                    modifier = Modifier.weight(1f),
+                    label = "Retailer",
+                    text = purchasedProduct.retailer
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                TextWithLabel(
+                    modifier = Modifier.weight(1f),
+                    label = "Price",
+                    text = purchasedProduct.price.toString()
+                )
+                TextWithLabel(
+                    modifier = Modifier.weight(1f),
+                    label = "Amount",
+                    text = "${purchasedProduct.quantity} ${purchasedProduct.unit}"
+                )
+            }
+            if (!purchasedProduct.notes.isEmpty()) {
+                TextWithLabel(
+                    label = "Notes",
+                    text = purchasedProduct.notes
+                )
+            }
+            Icon(
+                modifier = Modifier
+                    .clickable(onClick = {}),
+                tint = MaterialTheme.colorScheme.primary,
+                imageVector = Icons.Default.Edit,
+                contentDescription = "Edit purchase details"
+            )
+            if (index != uiState.selectedVariety.purchases.lastIndex) {
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun TextWithLabel(modifier: Modifier = Modifier, label: String, text: String) {
+    Column(modifier = modifier) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+        )
+        Text(
+            text = text
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProductVarietyDropdown(
+    selectedVarietyName: String,
+    varieties: List<ProductAggregateQuery.Variety>,
+    onVarietySelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = it }
+    ) {
+        Row(
+            modifier = Modifier
+                .menuAnchor(type = MenuAnchorType.PrimaryEditable, true),
+        ) {
+            Text(
+                text = selectedVarietyName,
+            )
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "Show variations"
+            )
+        }
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            varieties.forEach { item ->
+                DropdownMenuItem(
+                    text = { Text(text = item.varietyName) },
+                    onClick = {
+                        onVarietySelected(item.varietyName)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}

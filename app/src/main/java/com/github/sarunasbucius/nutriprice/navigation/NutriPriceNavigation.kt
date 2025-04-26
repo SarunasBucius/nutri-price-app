@@ -32,6 +32,6 @@ fun NavGraphBuilder.nutriPriceNavigation() {
     }
 
     composable<NutriPriceScreen.EditProduct> {
-        EditProductScreen()
+        ProductScreen()
     }
 }
