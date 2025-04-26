@@ -1,4 +1,4 @@
-package com.github.sarunasbucius.nutriprice.feature.editProduct
+package com.github.sarunasbucius.nutriprice.feature.product
 
 import android.util.Log
 import androidx.compose.runtime.getValue

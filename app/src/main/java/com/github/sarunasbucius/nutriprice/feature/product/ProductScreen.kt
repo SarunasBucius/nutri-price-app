@@ -1,4 +1,4 @@
-package com.github.sarunasbucius.nutriprice.feature.editProduct
+package com.github.sarunasbucius.nutriprice.feature.product
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
