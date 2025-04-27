@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.sarunasbucius.nutriprice.core.model.PurchaseDetails
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 import com.github.sarunasbucius.nutriprice.graphql.ProductAggregateQuery
@@ -231,7 +232,21 @@ fun ProductDetails(uiState: ProductAggregateUi, onVarietySelected: (String) -> U
             }
             Icon(
                 modifier = Modifier
-                    .clickable(onClick = {}),
+                    .clickable(onClick = {
+                        navigator.navigate(
+                            NutriPriceScreen.EditPurchase(
+                                purchaseDetails = PurchaseDetails(
+                                    id = purchasedProduct.id,
+                                    date = purchasedProduct.date,
+                                    retailer = purchasedProduct.retailer,
+                                    price = purchasedProduct.price,
+                                    amount = purchasedProduct.quantity,
+                                    unit = purchasedProduct.unit,
+                                    notes = purchasedProduct.notes
+                                )
+                            )
+                        )
+                    }),
                 tint = MaterialTheme.colorScheme.primary,
                 imageVector = Icons.Default.Edit,
                 contentDescription = "Edit purchase details"

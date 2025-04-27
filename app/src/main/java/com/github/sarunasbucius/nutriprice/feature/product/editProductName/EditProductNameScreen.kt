@@ -7,6 +7,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -18,13 +19,20 @@ fun EditProductNameScreen(viewModel: EditProductNameViewModel = hiltViewModel())
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(text = "Edit product and variety name")
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(bottom = 8.dp),
+            text = "Edit product and variety name"
+        )
         TextField(
+            modifier = Modifier.padding(bottom = 8.dp),
             value = viewModel.uiState.productName,
             onValueChange = { viewModel.updateProductName(it) },
             label = { Text("Product name") }
         )
         TextField(
+            modifier = Modifier.padding(bottom = 8.dp),
             value = viewModel.uiState.varietyName,
             onValueChange = { viewModel.updateVarietyName(it) },
             label = { Text("Variety name") }

@@ -5,3 +5,7 @@ mutation UpdateProductName($id: ID!, $name: String!) {
 mutation UpdateVarietyName($oldName: String!, $varietyName: String!) {
     updateVariety(oldName: $oldName, varietyName: $varietyName)
 }
+
+mutation UpdatePurchase($id: ID!, $purchaseInput: PurchaseInput!) {
+    updatePurchase(id: $id, input: $purchaseInput)
+}

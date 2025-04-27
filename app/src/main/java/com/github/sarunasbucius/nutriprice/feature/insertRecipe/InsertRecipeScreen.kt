@@ -39,7 +39,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.sarunasbucius.nutriprice.core.design.component.NutriPriceCircularProgress
 import com.github.sarunasbucius.nutriprice.core.design.component.UnitDropdown
-import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 
 @Composable
@@ -209,9 +208,7 @@ fun IngredientSection(
             unit = ingredient.unit,
             onValueChange = {
                 updateIngredient(
-                    ingredient.copy(
-                        unit = it as? QuantityUnit ?: QuantityUnit.UNSPECIFIED
-                    )
+                    ingredient.copy(unit = it)
                 )
             }
         )

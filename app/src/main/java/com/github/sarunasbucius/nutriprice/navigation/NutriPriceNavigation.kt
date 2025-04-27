@@ -8,6 +8,7 @@ import com.github.sarunasbucius.nutriprice.feature.insertProduct.InsertProductSc
 import com.github.sarunasbucius.nutriprice.feature.insertRecipe.InsertRecipeScreen
 import com.github.sarunasbucius.nutriprice.feature.product.ProductScreen
 import com.github.sarunasbucius.nutriprice.feature.product.editProductName.EditProductNameScreen
+import com.github.sarunasbucius.nutriprice.feature.product.editPurchase.EditPurchaseScreen
 import com.github.sarunasbucius.nutriprice.feature.productList.ProductListScreen
 import com.github.sarunasbucius.nutriprice.feature.recipeList.RecipeListScreen
 
@@ -38,5 +39,11 @@ fun NavGraphBuilder.nutriPriceNavigation() {
 
     composable<NutriPriceScreen.EditProductName> {
         EditProductNameScreen()
+    }
+
+    composable<NutriPriceScreen.EditPurchase>(
+        typeMap = NutriPriceScreen.EditPurchase.typeMap
+    ) {
+        EditPurchaseScreen()
     }
 }

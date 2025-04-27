@@ -2,9 +2,7 @@ package com.github.sarunasbucius.nutriprice.core.network
 
 import com.github.sarunasbucius.nutriprice.core.model.NewProduct
 import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
-import com.github.sarunasbucius.nutriprice.core.model.NutritionalValueUnit
 import com.github.sarunasbucius.nutriprice.core.model.PurchaseDetails
-import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceService
 import com.skydoves.sandwich.ApiResponse
 import kotlinx.coroutines.test.runTest
@@ -38,13 +36,16 @@ class NutriPriceServiceTest : ApiAbstract<NutriPriceService>() {
             NewProduct(
                 name = "Apple",
                 purchaseDetails = PurchaseDetails(
+                    id = "",
+                    date = "",
+                    retailer = "",
                     price = null,
                     amount = null,
-                    unit = QuantityUnit.UNSPECIFIED,
+                    unit = "",
                     notes = "",
                 ),
                 nutritionalValues = NutritionalValue(
-                    unit = NutritionalValueUnit.UNSPECIFIED,
+                    unit = "",
                     energyValueKcal = null,
                     fat = null,
                     saturatedFat = null,

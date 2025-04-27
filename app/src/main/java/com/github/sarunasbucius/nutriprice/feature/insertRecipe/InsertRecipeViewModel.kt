@@ -7,7 +7,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.sarunasbucius.nutriprice.core.model.Ingredient
-import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 import com.github.sarunasbucius.nutriprice.core.model.Recipe
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
@@ -41,7 +40,7 @@ data class InsertRecipeUiState(
 data class IngredientUi(
     val name: String = "",
     val amount: String = "",
-    val unit: QuantityUnit = QuantityUnit.UNSPECIFIED,
+    val unit: String = "",
     val notes: String = "",
 )
 

@@ -12,16 +12,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.github.sarunasbucius.nutriprice.core.model.DisplayableUnit
-import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UnitDropdown(
     modifier: Modifier = Modifier,
-    unit: DisplayableUnit,
-    units: List<DisplayableUnit> = QuantityUnit.entries,
-    onValueChange: (DisplayableUnit) -> Unit
+    unit: String,
+    units: List<String> = listOf("", "g", "ml", "pcs"),
+    onValueChange: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -31,7 +29,7 @@ fun UnitDropdown(
         onExpandedChange = { expanded = it }
     ) {
         TextField(
-            value = unit.display,
+            value = unit,
             onValueChange = { onValueChange },
             modifier = Modifier
                 .menuAnchor(type = MenuAnchorType.PrimaryEditable, true),
@@ -44,7 +42,7 @@ fun UnitDropdown(
         ) {
             units.forEach { item ->
                 DropdownMenuItem(
-                    text = { Text(text = item.display) },
+                    text = { Text(text = item) },
                     onClick = {
                         onValueChange(item)
                         expanded = false

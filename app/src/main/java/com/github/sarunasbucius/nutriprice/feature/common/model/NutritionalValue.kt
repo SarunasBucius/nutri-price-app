@@ -1,10 +1,9 @@
 package com.github.sarunasbucius.nutriprice.feature.common.model
 
 import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
-import com.github.sarunasbucius.nutriprice.core.model.NutritionalValueUnit
 
 data class NutritionalValueUi(
-    val unit: NutritionalValueUnit = NutritionalValueUnit.UNSPECIFIED,
+    val unit: String = "",
     val energyValueKcal: String = "",
     val fat: String = "",
     val saturatedFat: String = "",
@@ -52,7 +51,7 @@ data class NutritionalValueUi(
     companion object {
         fun fromApiModel(nutritionalValue: NutritionalValue): NutritionalValueUi {
             return NutritionalValueUi(
-                unit = nutritionalValue.unit ?: NutritionalValueUnit.UNSPECIFIED,
+                unit = nutritionalValue.unit ?: "",
                 energyValueKcal = nutritionalValue.energyValueKcal?.toString() ?: "",
                 fat = nutritionalValue.fat?.toString() ?: "",
                 saturatedFat = nutritionalValue.saturatedFat?.toString() ?: "",

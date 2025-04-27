@@ -67,7 +67,7 @@ input PurchaseInput {
     price: Float!
     retailer: String!
     unit: String!
-    notes: String
+    notes: String!
 }
 
 type Mutation {

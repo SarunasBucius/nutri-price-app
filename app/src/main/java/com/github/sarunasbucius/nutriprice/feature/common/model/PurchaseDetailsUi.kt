@@ -1,13 +1,15 @@
 package com.github.sarunasbucius.nutriprice.feature.common.model
 
 import com.github.sarunasbucius.nutriprice.core.model.PurchaseDetails
-import com.github.sarunasbucius.nutriprice.core.model.QuantityUnit
 
 data class PurchaseDetailsUi(
+    val id: String = "",
+    val date: String = "",
+    val retailer: String = "",
     val price: String = "",
     val notes: String = "",
     val amount: String = "",
-    val unit: QuantityUnit = QuantityUnit.UNSPECIFIED,
+    val unit: String = "",
 ) {
     fun validate(): List<String> {
         val errors = mutableListOf<String>()
@@ -22,20 +24,26 @@ data class PurchaseDetailsUi(
 
     fun toApiModel(): PurchaseDetails {
         return PurchaseDetails(
+            id = id,
             price = price.toDoubleOrNull(),
             amount = amount.toDoubleOrNull(),
             unit = unit,
             notes = notes,
+            date = date,
+            retailer = retailer,
         )
     }
 
     companion object {
         fun fromApiModel(purchaseDetails: PurchaseDetails): PurchaseDetailsUi {
             return PurchaseDetailsUi(
+                id = purchaseDetails.id,
+                date = purchaseDetails.date,
+                retailer = purchaseDetails.retailer,
                 price = purchaseDetails.price?.toString() ?: "",
                 notes = purchaseDetails.notes,
                 amount = purchaseDetails.amount?.toString() ?: "",
-                unit = purchaseDetails.unit ?: QuantityUnit.UNSPECIFIED,
+                unit = purchaseDetails.unit,
             )
         }
     }

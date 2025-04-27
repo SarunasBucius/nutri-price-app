@@ -32,14 +32,8 @@ fun InsertProductScreen(
             updateProductName = insertProductViewModel::updateName
         )
 
-        Text(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(8.dp),
-            text = "Purchase details",
-        )
-
         PurchaseInput(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
             purchase = uiState.purchaseDetails,
             updatePurchasedProduct = insertProductViewModel::updatePurchaseDetails
         )

@@ -1,5 +1,7 @@
 package com.github.sarunasbucius.nutriprice.core.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,16 +19,20 @@ data class Product(
 )
 
 @Serializable
+@Parcelize
 data class PurchaseDetails(
+    val id: String,
+    val date: String,
+    val retailer: String,
     val price: Double?,
     val amount: Double?,
-    val unit: QuantityUnit?,
+    val unit: String,
     val notes: String = ""
-)
+) : Parcelable
 
 @Serializable
 data class NutritionalValue(
-    val unit: NutritionalValueUnit?,
+    val unit: String?,
     val energyValueKcal: Double?,
     val fat: Double?,
     val saturatedFat: Double?,
