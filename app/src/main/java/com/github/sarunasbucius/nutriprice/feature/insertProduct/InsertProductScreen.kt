@@ -40,7 +40,7 @@ fun InsertProductScreen(
 
         NutritionalValueInput(
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            nutritionalValues = uiState.nutritionalValues,
+            nutritionalValue = uiState.nutritionalValues,
             updateNutritionalValue = insertProductViewModel::updateNutritionalValue
         )
 

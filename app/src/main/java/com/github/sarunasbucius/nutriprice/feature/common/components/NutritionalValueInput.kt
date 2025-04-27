@@ -16,7 +16,7 @@ import com.github.sarunasbucius.nutriprice.feature.common.model.NutritionalValue
 @Composable
 fun NutritionalValueInput(
     modifier: Modifier = Modifier,
-    nutritionalValues: NutritionalValueUi,
+    nutritionalValue: NutritionalValueUi,
     updateNutritionalValue: (NutritionalValueUi) -> Unit
 ) {
     Text(
@@ -30,11 +30,11 @@ fun NutritionalValueInput(
             modifier = Modifier
                 .weight(1f)
                 .padding(end = 4.dp),
-            unit = nutritionalValues.unit,
+            unit = nutritionalValue.unit,
             units = listOf("", "100 g", "100 ml", "1 piece"),
             onValueChange = {
                 updateNutritionalValue(
-                    nutritionalValues.copy(unit = it)
+                    nutritionalValue.copy(unit = it)
                 )
             }
         )
@@ -43,10 +43,10 @@ fun NutritionalValueInput(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 4.dp),
-            value = nutritionalValues.energyValueKcal,
+            value = nutritionalValue.energyValueKcal,
             onValueChange = {
                 updateNutritionalValue(
-                    nutritionalValues.copy(energyValueKcal = it)
+                    nutritionalValue.copy(energyValueKcal = it)
                 )
             },
             label = { Text("Energy value (kcal)") },
@@ -59,10 +59,10 @@ fun NutritionalValueInput(
             modifier = Modifier
                 .weight(1f)
                 .padding(end = 4.dp),
-            value = nutritionalValues.fat,
+            value = nutritionalValue.fat,
             onValueChange = {
                 updateNutritionalValue(
-                    nutritionalValues.copy(fat = it)
+                    nutritionalValue.copy(fat = it)
                 )
             },
             label = { Text("Fat") },
@@ -73,10 +73,10 @@ fun NutritionalValueInput(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 4.dp),
-            value = nutritionalValues.saturatedFat,
+            value = nutritionalValue.saturatedFat,
             onValueChange = {
                 updateNutritionalValue(
-                    nutritionalValues.copy(saturatedFat = it)
+                    nutritionalValue.copy(saturatedFat = it)
                 )
             },
             label = { Text("Saturated fat") },
@@ -89,10 +89,10 @@ fun NutritionalValueInput(
             modifier = Modifier
                 .weight(1f)
                 .padding(end = 4.dp),
-            value = nutritionalValues.carbohydrate,
+            value = nutritionalValue.carbohydrate,
             onValueChange = {
                 updateNutritionalValue(
-                    nutritionalValues.copy(carbohydrate = it)
+                    nutritionalValue.copy(carbohydrate = it)
                 )
             },
             label = { Text("Carbohydrate") },
@@ -103,10 +103,10 @@ fun NutritionalValueInput(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 4.dp),
-            value = nutritionalValues.carbohydrateSugars,
+            value = nutritionalValue.carbohydrateSugars,
             onValueChange = {
                 updateNutritionalValue(
-                    nutritionalValues.copy(carbohydrateSugars = it)
+                    nutritionalValue.copy(carbohydrateSugars = it)
                 )
             },
             label = { Text("Sugars") },
@@ -119,10 +119,10 @@ fun NutritionalValueInput(
             modifier = Modifier
                 .weight(1f)
                 .padding(end = 4.dp),
-            value = nutritionalValues.fibre,
+            value = nutritionalValue.fibre,
             onValueChange = {
                 updateNutritionalValue(
-                    nutritionalValues.copy(fibre = it)
+                    nutritionalValue.copy(fibre = it)
                 )
             },
             label = { Text("Fibre") },
@@ -133,10 +133,10 @@ fun NutritionalValueInput(
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 4.dp),
-            value = nutritionalValues.protein,
+            value = nutritionalValue.protein,
             onValueChange = {
                 updateNutritionalValue(
-                    nutritionalValues.copy(protein = it)
+                    nutritionalValue.copy(protein = it)
                 )
             },
             label = { Text("Protein") },
@@ -147,10 +147,10 @@ fun NutritionalValueInput(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 4.dp),
-            value = nutritionalValues.salt,
+            value = nutritionalValue.salt,
             onValueChange = {
                 updateNutritionalValue(
-                    nutritionalValues.copy(salt = it)
+                    nutritionalValue.copy(salt = it)
                 )
             },
             label = { Text("Salt") },

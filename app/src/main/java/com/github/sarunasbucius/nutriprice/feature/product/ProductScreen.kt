@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
 import com.github.sarunasbucius.nutriprice.core.model.PurchaseDetails
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
@@ -178,13 +179,39 @@ fun ProductDetails(uiState: ProductAggregateUi, onVarietySelected: (String) -> U
 
             Icon(
                 modifier = Modifier
-                    .clickable(onClick = {}),
+                    .clickable(onClick = {
+                        navigator.navigate(
+                            NutriPriceScreen.EditNutritionalValue(
+                                productId = uiState.productId,
+                                varietyName = uiState.selectedVariety.varietyName,
+                                nutritionalValue = NutritionalValue(
+                                    unit = uiState.selectedVariety.nutritionalValue.unit,
+                                    energyValueKcal = uiState.selectedVariety.nutritionalValue.energyValueKcal,
+                                    fat = uiState.selectedVariety.nutritionalValue.fat,
+                                    saturatedFat = uiState.selectedVariety.nutritionalValue.saturatedFat,
+                                    carbohydrate = uiState.selectedVariety.nutritionalValue.carbohydrate,
+                                    carbohydrateSugars = uiState.selectedVariety.nutritionalValue.carbohydrateSugars,
+                                    fibre = uiState.selectedVariety.nutritionalValue.fibre,
+                                    protein = uiState.selectedVariety.nutritionalValue.protein,
+                                    salt = uiState.selectedVariety.nutritionalValue.salt
+                                )
+                            )
+                        )
+                    }),
                 tint = MaterialTheme.colorScheme.primary,
                 imageVector = Icons.Default.Edit,
                 contentDescription = "Edit nutritional values"
             )
         } else {
-            Button(onClick = {}) {
+            Button(onClick = {
+                navigator.navigate(
+                    NutriPriceScreen.EditNutritionalValue(
+                        productId = uiState.productId,
+                        varietyName = uiState.selectedVariety.varietyName,
+                        nutritionalValue = NutritionalValue()
+                    )
+                )
+            }) {
                 Text(text = "Set nutritional values")
             }
         }

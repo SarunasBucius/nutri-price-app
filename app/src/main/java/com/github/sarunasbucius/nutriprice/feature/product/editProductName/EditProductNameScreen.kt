@@ -37,6 +37,9 @@ fun EditProductNameScreen(viewModel: EditProductNameViewModel = hiltViewModel())
             onValueChange = { viewModel.updateVarietyName(it) },
             label = { Text("Variety name") }
         )
+        viewModel.uiState.errors.forEach {
+            Text(text = it, color = androidx.compose.ui.graphics.Color.Red)
+        }
         Button(onClick = { viewModel.submit() }) {
             Text(text = "Submit")
         }

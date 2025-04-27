@@ -52,14 +52,18 @@ data class NutritionalValueUi(
         fun fromApiModel(nutritionalValue: NutritionalValue): NutritionalValueUi {
             return NutritionalValueUi(
                 unit = nutritionalValue.unit ?: "",
-                energyValueKcal = nutritionalValue.energyValueKcal?.toString() ?: "",
-                fat = nutritionalValue.fat?.toString() ?: "",
-                saturatedFat = nutritionalValue.saturatedFat?.toString() ?: "",
-                carbohydrate = nutritionalValue.carbohydrate?.toString() ?: "",
-                carbohydrateSugars = nutritionalValue.carbohydrateSugars?.toString() ?: "",
-                fibre = nutritionalValue.fibre?.toString() ?: "",
-                protein = nutritionalValue.protein?.toString() ?: "",
-                salt = nutritionalValue.salt?.toString() ?: "",
+                energyValueKcal = nutritionalValue.energyValueKcal?.takeIf { it != 0.0 }?.toString()
+                    ?: "",
+                fat = nutritionalValue.fat?.takeIf { it != 0.0 }?.toString() ?: "",
+                saturatedFat = nutritionalValue.saturatedFat?.takeIf { it != 0.0 }?.toString()
+                    ?: "",
+                carbohydrate = nutritionalValue.carbohydrate?.takeIf { it != 0.0 }?.toString()
+                    ?: "",
+                carbohydrateSugars = nutritionalValue.carbohydrateSugars?.takeIf { it != 0.0 }
+                    ?.toString() ?: "",
+                fibre = nutritionalValue.fibre?.takeIf { it != 0.0 }?.toString() ?: "",
+                protein = nutritionalValue.protein?.takeIf { it != 0.0 }?.toString() ?: "",
+                salt = nutritionalValue.salt?.takeIf { it != 0.0 }?.toString() ?: "",
             )
         }
     }

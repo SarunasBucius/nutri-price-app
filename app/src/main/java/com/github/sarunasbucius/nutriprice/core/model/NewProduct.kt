@@ -31,14 +31,15 @@ data class PurchaseDetails(
 ) : Parcelable
 
 @Serializable
+@Parcelize
 data class NutritionalValue(
-    val unit: String?,
-    val energyValueKcal: Double?,
-    val fat: Double?,
-    val saturatedFat: Double?,
-    val carbohydrate: Double?,
-    val carbohydrateSugars: Double?,
-    val fibre: Double?,
-    val protein: Double?,
-    val salt: Double?,
-)
+    val unit: String? = "",
+    val energyValueKcal: Double? = 0.0,
+    val fat: Double? = 0.0,
+    val saturatedFat: Double? = 0.0,
+    val carbohydrate: Double? = 0.0,
+    val carbohydrateSugars: Double? = 0.0,
+    val fibre: Double? = 0.0,
+    val protein: Double? = 0.0,
+    val salt: Double? = 0.0,
+) : Parcelable

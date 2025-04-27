@@ -1,6 +1,5 @@
 package com.github.sarunasbucius.nutriprice.feature.product.editPurchase
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -46,7 +45,6 @@ class EditPurchaseViewModel @Inject constructor(
                 navigation.navigateUp()
             }
         }
-        Log.d("EditPurchaseViewModel", "purchaseDetails: $purchaseDetails")
         updatePurchase(PurchaseDetailsUi.fromApiModel(purchaseDetails!!))
     }
 
