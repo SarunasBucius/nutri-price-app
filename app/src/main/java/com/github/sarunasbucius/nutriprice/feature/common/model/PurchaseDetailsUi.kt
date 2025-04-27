@@ -1,9 +1,9 @@
 package com.github.sarunasbucius.nutriprice.feature.common.model
 
 import com.github.sarunasbucius.nutriprice.core.model.PurchaseDetails
+import com.github.sarunasbucius.nutriprice.graphql.type.PurchaseInput
 
 data class PurchaseDetailsUi(
-    val id: String = "",
     val date: String = "",
     val retailer: String = "",
     val price: String = "",
@@ -22,11 +22,10 @@ data class PurchaseDetailsUi(
         return errors
     }
 
-    fun toApiModel(): PurchaseDetails {
-        return PurchaseDetails(
-            id = id,
-            price = price.toDoubleOrNull(),
-            amount = amount.toDoubleOrNull(),
+    fun toApiModel(): PurchaseInput {
+        return PurchaseInput(
+            price = price.toDoubleOrNull() ?: 0.0,
+            quantity = amount.toDoubleOrNull() ?: 0.0,
             unit = unit,
             notes = notes,
             date = date,
@@ -34,10 +33,13 @@ data class PurchaseDetailsUi(
         )
     }
 
+    fun isEmpty(): Boolean {
+        return date.isEmpty() && retailer.isEmpty() && price.isEmpty() && notes.isEmpty() && amount.isEmpty() && unit.isEmpty()
+    }
+
     companion object {
         fun fromApiModel(purchaseDetails: PurchaseDetails): PurchaseDetailsUi {
             return PurchaseDetailsUi(
-                id = purchaseDetails.id,
                 date = purchaseDetails.date,
                 retailer = purchaseDetails.retailer,
                 price = purchaseDetails.price?.toString() ?: "",

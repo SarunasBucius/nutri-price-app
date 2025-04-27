@@ -13,3 +13,7 @@ mutation UpdatePurchase($id: ID!, $purchaseInput: PurchaseInput!) {
 mutation UpdateNutritionalValue($id: ID!, $varietyName: String!, $input: NutritionalValueInput!) {
     upsertNutritionalValue(productID: $id, varietyName: $varietyName, input: $input)
 }
+
+mutation CreateProduct($input: ProductAggregateInput!) {
+    createProduct(input: $input)
+}

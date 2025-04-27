@@ -1,6 +1,7 @@
 package com.github.sarunasbucius.nutriprice.feature.common.model
 
 import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
+import com.github.sarunasbucius.nutriprice.graphql.type.NutritionalValueInput
 
 data class NutritionalValueUi(
     val unit: String = "",
@@ -34,18 +35,22 @@ data class NutritionalValueUi(
         return errors
     }
 
-    fun toApiModel(): NutritionalValue {
-        return NutritionalValue(
+    fun toApiModel(): NutritionalValueInput {
+        return NutritionalValueInput(
             unit = unit,
-            energyValueKcal = energyValueKcal.toDoubleOrNull(),
-            fat = fat.toDoubleOrNull(),
-            saturatedFat = saturatedFat.toDoubleOrNull(),
-            carbohydrate = carbohydrate.toDoubleOrNull(),
-            carbohydrateSugars = carbohydrateSugars.toDoubleOrNull(),
-            fibre = fibre.toDoubleOrNull(),
-            protein = protein.toDoubleOrNull(),
-            salt = salt.toDoubleOrNull()
+            energyValueKcal = energyValueKcal.toDoubleOrNull() ?: 0.0,
+            fat = fat.toDoubleOrNull() ?: 0.0,
+            saturatedFat = saturatedFat.toDoubleOrNull() ?: 0.0,
+            carbohydrate = carbohydrate.toDoubleOrNull() ?: 0.0,
+            carbohydrateSugars = carbohydrateSugars.toDoubleOrNull() ?: 0.0,
+            fibre = fibre.toDoubleOrNull() ?: 0.0,
+            protein = protein.toDoubleOrNull() ?: 0.0,
+            salt = salt.toDoubleOrNull() ?: 0.0
         )
+    }
+
+    fun isEmpty(): Boolean {
+        return unit.isEmpty() && energyValueKcal.isEmpty() && fat.isEmpty() && saturatedFat.isEmpty() && carbohydrate.isEmpty() && carbohydrateSugars.isEmpty() && fibre.isEmpty() && protein.isEmpty() && salt.isEmpty()
     }
 
     companion object {

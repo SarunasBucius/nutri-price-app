@@ -5,14 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.sarunasbucius.nutriprice.core.model.NewProduct
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Optional
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
-import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceClient
 import com.github.sarunasbucius.nutriprice.feature.common.model.NutritionalValueUi
 import com.github.sarunasbucius.nutriprice.feature.common.model.PurchaseDetailsUi
-import com.skydoves.sandwich.onError
-import com.skydoves.sandwich.onSuccess
+import com.github.sarunasbucius.nutriprice.graphql.CreateProductMutation
+import com.github.sarunasbucius.nutriprice.graphql.type.ProductAggregateInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -20,15 +20,28 @@ import javax.inject.Inject
 
 data class InsertProductUiState(
     val productName: String = "",
+    val varietyName: String = "",
     val purchaseDetails: PurchaseDetailsUi = PurchaseDetailsUi(),
     val nutritionalValues: NutritionalValueUi = NutritionalValueUi(),
     val errors: List<String> = emptyList(),
 ) {
-    fun toApiModel(): NewProduct {
-        return NewProduct(
+    fun toApiModel(): ProductAggregateInput {
+        val purchase = if (purchaseDetails.isEmpty()) {
+            Optional.absent()
+        } else {
+            Optional.present(purchaseDetails.toApiModel())
+        }
+
+        val nutritionalValue = if (nutritionalValues.isEmpty()) {
+            Optional.absent()
+        } else {
+            Optional.present(nutritionalValues.toApiModel())
+        }
+        return ProductAggregateInput(
             name = productName,
-            purchaseDetails = purchaseDetails.toApiModel(),
-            nutritionalValues = nutritionalValues.toApiModel(),
+            varietyName = varietyName,
+            purchase = purchase,
+            nutritionalValue = nutritionalValue,
         )
     }
 
@@ -47,7 +60,7 @@ data class InsertProductUiState(
 
 @HiltViewModel
 class InsertProductViewModel @Inject constructor(
-    private val nutriPriceClient: NutriPriceClient,
+    private val apolloClient: ApolloClient,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
     var uiState by mutableStateOf(InsertProductUiState())
@@ -55,6 +68,10 @@ class InsertProductViewModel @Inject constructor(
 
     fun updateName(name: String) {
         uiState = uiState.copy(productName = name)
+    }
+
+    fun updateVarietyName(varietyName: String) {
+        uiState = uiState.copy(varietyName = varietyName)
     }
 
     fun updatePurchaseDetails(purchasedProduct: PurchaseDetailsUi) {
@@ -73,12 +90,14 @@ class InsertProductViewModel @Inject constructor(
         }
 
         viewModelScope.launch(ioDispatcher) {
-            val result = nutriPriceClient.insertProduct(uiState.toApiModel())
-            result.onSuccess {
-                onProductInserted()
-            }.onError {
+            val result = apolloClient.mutation(
+                CreateProductMutation(input = uiState.toApiModel())
+            ).execute()
+            if (result.hasErrors()) {
                 uiState = uiState.copy(errors = listOf("Something went wrong"))
+                return@launch
             }
+            onProductInserted()
         }
     }
 }

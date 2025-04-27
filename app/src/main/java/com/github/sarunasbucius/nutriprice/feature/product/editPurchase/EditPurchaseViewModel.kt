@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class EditPurchaseUiState(
+    val id: String = "",
     val purchase: PurchaseDetailsUi = PurchaseDetailsUi(),
     val errors: List<String> = listOf(),
 )
@@ -46,6 +47,7 @@ class EditPurchaseViewModel @Inject constructor(
             }
         }
         updatePurchase(PurchaseDetailsUi.fromApiModel(purchaseDetails!!))
+        uiState = uiState.copy(id = purchaseDetails.id)
     }
 
     fun updatePurchase(purchaseDetails: PurchaseDetailsUi) {
@@ -63,7 +65,7 @@ class EditPurchaseViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
             val result = apolloClient.mutation(
                 UpdatePurchaseMutation(
-                    id = uiState.purchase.id,
+                    id = uiState.id,
                     purchaseInput = PurchaseInput(
                         date = uiState.purchase.date,
                         retailer = uiState.purchase.retailer,
