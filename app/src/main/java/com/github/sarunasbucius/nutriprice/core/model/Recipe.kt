@@ -12,7 +12,7 @@ data class Recipe(
 
 @Serializable
 data class Ingredient(
-    val name: String,
+    val product: String,
     val amount: Double?,
     val unit: String,
     val notes: String

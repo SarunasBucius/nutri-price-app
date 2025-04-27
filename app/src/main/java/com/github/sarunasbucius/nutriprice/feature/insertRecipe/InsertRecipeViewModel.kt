@@ -6,16 +6,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.apollographql.apollo.ApolloClient
 import com.github.sarunasbucius.nutriprice.core.model.Ingredient
 import com.github.sarunasbucius.nutriprice.core.model.Recipe
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceClient
-import com.skydoves.sandwich.message
+import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarController
+import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarEvent
+import com.github.sarunasbucius.nutriprice.graphql.ProductsQuery
 import com.skydoves.sandwich.onError
-import com.skydoves.sandwich.onFailure
 import com.skydoves.sandwich.onSuccess
-import com.skydoves.sandwich.suspendOnSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted
@@ -46,6 +47,7 @@ data class IngredientUi(
 
 @HiltViewModel
 class InsertRecipeViewModel @Inject constructor(
+    private val apolloClient: ApolloClient,
     private val nutriPriceClient: NutriPriceClient,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -53,10 +55,12 @@ class InsertRecipeViewModel @Inject constructor(
         private set
 
     val productList: StateFlow<List<String>> = flow {
-        nutriPriceClient.fetchProductList().suspendOnSuccess {
-            emit(data)
-        }.onFailure {
-            Log.e("InsertRecipeViewModel", message())
+        val response = apolloClient.query(ProductsQuery()).execute()
+        emit(response.data?.products?.map { it.name } ?: emptyList())
+
+        if (!response.errors.isNullOrEmpty()) {
+            Log.e("InsertRecipeViewModel", response.errors.toString())
+            SnackbarController.sendEvent(SnackbarEvent("ERROR: failed to fetch products"))
         }
     }.onStart { uiState = uiState.copy(isLoading = true) }
         .onCompletion { uiState = uiState.copy(isLoading = false) }
@@ -130,7 +134,7 @@ class InsertRecipeViewModel @Inject constructor(
             steps = uiState.steps.filter { it.isNotEmpty() },
             ingredients = ingredients.map { ingredient ->
                 Ingredient(
-                    name = ingredient.name,
+                    product = ingredient.name,
                     amount = ingredient.amount.toDoubleOrNull(),
                     unit = ingredient.unit,
                     notes = ingredient.notes,
