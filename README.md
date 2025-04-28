@@ -27,4 +27,4 @@ Nutri Price communicates primarily with a backend service via **GraphQL**, using
 GraphQL Client**.  
 In some cases, it also uses **OkHttp** or **Retrofit** for RESTful API calls.
 
-Backend repo: `https://github.com/SarunasBucius/nutri-price-server`
+Backend repo: https://github.com/SarunasBucius/nutri-price-server
