@@ -50,5 +50,8 @@ sealed interface NutriPriceScreen {
             val typeMap = mapOf(typeOf<NutritionalValue>() to NutritionalValueType)
         }
     }
+
+    @Serializable
+    data class Recipe(val recipeId: String) : NutriPriceScreen
 }
 

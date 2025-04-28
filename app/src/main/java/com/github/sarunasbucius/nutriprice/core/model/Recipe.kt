@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class Recipe(
     val name: String,
     val ingredients: List<Ingredient>,
-    val steps: List<String>,
+    val steps: List<String> = emptyList(),
     val notes: String,
 )
 
@@ -16,4 +16,10 @@ data class Ingredient(
     val amount: Double?,
     val unit: String,
     val notes: String
+)
+
+@Serializable
+data class RecipeIdAndName(
+    val id: String,
+    val name: String
 )

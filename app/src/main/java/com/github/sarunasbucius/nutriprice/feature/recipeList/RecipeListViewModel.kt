@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.sarunasbucius.nutriprice.core.model.RecipeIdAndName
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceClient
@@ -31,7 +32,7 @@ class RecipeListViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<RecipeListUiState>(RecipeListUiState.Idle)
     internal val uiState = _uiState.asStateFlow()
 
-    val recipeList: StateFlow<List<String>> = flow {
+    val recipeList: StateFlow<List<RecipeIdAndName>> = flow {
         nutriPriceClient.fetchRecipeList().suspendOnSuccess {
             emit(data)
         }.onFailure {
