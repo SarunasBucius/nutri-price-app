@@ -2,23 +2,30 @@ package com.github.sarunasbucius.nutriprice.feature.common.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.github.sarunasbucius.nutriprice.core.design.component.UnitDropdown
 import com.github.sarunasbucius.nutriprice.feature.common.model.NutritionalValueUi
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NutritionalValueInput(
     modifier: Modifier = Modifier,
     nutritionalValue: NutritionalValueUi,
     updateNutritionalValue: (NutritionalValueUi) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
     Text(
         modifier = modifier
             .padding(8.dp),
@@ -50,7 +57,13 @@ fun NutritionalValueInput(
                 )
             },
             label = { Text("Energy value (kcal)", maxLines = 1) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Next) }
+            ),
         )
     }
 
@@ -66,7 +79,13 @@ fun NutritionalValueInput(
                 )
             },
             label = { Text("Fat") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Next) }
+            ),
         )
 
         TextField(
@@ -80,7 +99,13 @@ fun NutritionalValueInput(
                 )
             },
             label = { Text("Saturated fat") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Next) }
+            ),
         )
     }
 
@@ -96,7 +121,13 @@ fun NutritionalValueInput(
                 )
             },
             label = { Text("Carbohydrate") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Next) }
+            ),
         )
 
         TextField(
@@ -110,7 +141,13 @@ fun NutritionalValueInput(
                 )
             },
             label = { Text("Sugars") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Next) }
+            ),
         )
     }
 
@@ -126,7 +163,13 @@ fun NutritionalValueInput(
                 )
             },
             label = { Text("Fibre") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Next) }
+            ),
         )
 
         TextField(
@@ -140,7 +183,13 @@ fun NutritionalValueInput(
                 )
             },
             label = { Text("Protein") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Next) }
+            ),
         )
 
         TextField(
@@ -154,7 +203,13 @@ fun NutritionalValueInput(
                 )
             },
             label = { Text("Salt") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Exit) }
+            ),
         )
     }
 }
