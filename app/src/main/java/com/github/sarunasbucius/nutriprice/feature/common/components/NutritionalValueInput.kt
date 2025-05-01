@@ -49,7 +49,7 @@ fun NutritionalValueInput(
                     nutritionalValue.copy(energyValueKcal = it)
                 )
             },
-            label = { Text("Energy value (kcal)") },
+            label = { Text("Energy value (kcal)", maxLines = 1) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
     }
