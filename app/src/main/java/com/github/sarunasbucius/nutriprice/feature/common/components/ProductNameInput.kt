@@ -11,7 +11,18 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ProductNameInput(productName: String, updateProductName: (String) -> Unit) {
+fun ProductNameInput(
+    modifier: Modifier = Modifier,
+    productName: String,
+    varietyName: String,
+    updateProductName: (String) -> Unit,
+    updateVarietyName: (String) -> Unit
+) {
+    Text(
+        modifier = modifier.padding(bottom = 8.dp),
+        text = "Product details"
+    )
+
     TextField(
         modifier = Modifier
             .fillMaxWidth()
@@ -19,6 +30,16 @@ fun ProductNameInput(productName: String, updateProductName: (String) -> Unit) {
         value = productName,
         onValueChange = { updateProductName(it) },
         label = { Text("Product name") },
+        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+    )
+
+    TextField(
+        modifier = Modifier
+            .padding(bottom = 8.dp)
+            .fillMaxWidth(),
+        value = varietyName,
+        onValueChange = { updateVarietyName(it) },
+        label = { Text("Variety name") },
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
     )
 }

@@ -5,12 +5,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.sarunasbucius.nutriprice.feature.common.components.ProductNameInput
 
 @Composable
 fun EditProductNameScreen(viewModel: EditProductNameViewModel = hiltViewModel()) {
@@ -19,26 +20,15 @@ fun EditProductNameScreen(viewModel: EditProductNameViewModel = hiltViewModel())
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(bottom = 8.dp),
-            text = "Edit product and variety name"
-        )
-        TextField(
-            modifier = Modifier.padding(bottom = 8.dp),
-            value = viewModel.uiState.productName,
-            onValueChange = { viewModel.updateProductName(it) },
-            label = { Text("Product name") }
-        )
-        TextField(
-            modifier = Modifier.padding(bottom = 8.dp),
-            value = viewModel.uiState.varietyName,
-            onValueChange = { viewModel.updateVarietyName(it) },
-            label = { Text("Variety name") }
+        ProductNameInput(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            productName = viewModel.uiState.productName,
+            varietyName = viewModel.uiState.varietyName,
+            updateProductName = { viewModel.updateProductName(it) },
+            updateVarietyName = { viewModel.updateVarietyName(it) }
         )
         viewModel.uiState.errors.forEach {
-            Text(text = it, color = androidx.compose.ui.graphics.Color.Red)
+            Text(text = it, color = Color.Red)
         }
         Button(onClick = { viewModel.submit() }) {
             Text(text = "Submit")
