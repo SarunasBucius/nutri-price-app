@@ -313,6 +313,7 @@ fun ProductVarietyDropdown(
     ) {
         Row(
             modifier = Modifier
+                .fillMaxWidth()
                 .menuAnchor(type = MenuAnchorType.PrimaryEditable, true),
         ) {
             Text(
