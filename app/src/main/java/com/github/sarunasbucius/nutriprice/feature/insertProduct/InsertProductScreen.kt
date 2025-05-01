@@ -1,10 +1,15 @@
 package com.github.sarunasbucius.nutriprice.feature.insertProduct
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -30,6 +35,8 @@ fun InsertProductScreen(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = WindowInsets.ime.asPaddingValues().calculateBottomPadding())
     ) {
         ProductNameInput(
             productName = uiState.productName,
