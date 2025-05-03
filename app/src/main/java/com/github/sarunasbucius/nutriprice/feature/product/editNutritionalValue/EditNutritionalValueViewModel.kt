@@ -15,7 +15,7 @@ import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarController
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarEvent
-import com.github.sarunasbucius.nutriprice.feature.common.model.NutritionalValueUi
+import com.github.sarunasbucius.nutriprice.feature.product.common.model.NutritionalValueUi
 import com.github.sarunasbucius.nutriprice.graphql.UpdateNutritionalValueMutation
 import com.github.sarunasbucius.nutriprice.graphql.type.NutritionalValueInput
 import dagger.hilt.android.lifecycle.HiltViewModel

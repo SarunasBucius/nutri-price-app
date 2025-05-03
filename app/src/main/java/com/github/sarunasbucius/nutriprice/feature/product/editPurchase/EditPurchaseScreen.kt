@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.github.sarunasbucius.nutriprice.feature.common.components.PurchaseInput
+import com.github.sarunasbucius.nutriprice.feature.product.common.components.PurchaseInput
 
 @Composable
 fun EditPurchaseScreen(viewModel: EditPurchaseViewModel = hiltViewModel()) {

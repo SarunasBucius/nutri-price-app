@@ -1,4 +1,4 @@
-package com.github.sarunasbucius.nutriprice.feature.recipe
+package com.github.sarunasbucius.nutriprice.feature.recipe.viewRecipe
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

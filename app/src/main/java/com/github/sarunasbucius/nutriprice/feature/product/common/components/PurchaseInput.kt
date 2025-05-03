@@ -1,4 +1,4 @@
-package com.github.sarunasbucius.nutriprice.feature.common.components
+package com.github.sarunasbucius.nutriprice.feature.product.common.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +13,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.github.sarunasbucius.nutriprice.core.design.component.DatePicker
 import com.github.sarunasbucius.nutriprice.core.design.component.UnitDropdown
-import com.github.sarunasbucius.nutriprice.feature.common.model.PurchaseDetailsUi
+import com.github.sarunasbucius.nutriprice.feature.product.common.model.PurchaseDetailsUi
 
 @Composable
 fun PurchaseInput(

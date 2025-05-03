@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.github.sarunasbucius.nutriprice.feature.common.components.ProductNameInput
+import com.github.sarunasbucius.nutriprice.feature.product.common.components.ProductNameInput
 
 @Composable
 fun EditProductNameScreen(viewModel: EditProductNameViewModel = hiltViewModel()) {

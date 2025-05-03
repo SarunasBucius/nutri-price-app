@@ -1,4 +1,4 @@
-package com.github.sarunasbucius.nutriprice.feature.insertRecipe
+package com.github.sarunasbucius.nutriprice.feature.recipe.insertRecipe
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -81,7 +82,7 @@ fun InsertRecipeScreen(
         }
 
         uiState.errors.forEach {
-            Text(text = it, color = androidx.compose.ui.graphics.Color.Red)
+            Text(text = it, color = Color.Red)
         }
 
         Button(onClick = { insertRecipeViewModel.insertRecipe { composeNavigator.navigateUp() } }) {

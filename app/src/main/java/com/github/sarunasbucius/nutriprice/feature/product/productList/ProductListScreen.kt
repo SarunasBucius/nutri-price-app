@@ -1,4 +1,4 @@
-package com.github.sarunasbucius.nutriprice.feature.recipeList
+package com.github.sarunasbucius.nutriprice.feature.product.productList
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -20,28 +20,27 @@ import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 
 @Composable
-fun RecipeListScreen(recipeListViewModel: RecipeListViewModel = hiltViewModel()) {
-    val uiState by recipeListViewModel.uiState.collectAsStateWithLifecycle()
-    val recipeList by recipeListViewModel.recipeList.collectAsStateWithLifecycle()
+fun ProductListScreen(productListViewModel: ProductListViewModel = hiltViewModel()) {
+    val uiState by productListViewModel.uiState.collectAsStateWithLifecycle()
+    val productList by productListViewModel.productList.collectAsStateWithLifecycle()
     val composeNavigator = currentComposeNavigator
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
-        if (uiState is RecipeListUiState.Loading) {
+        if (uiState is ProductListUiState.Loading) {
             Box(modifier = Modifier.fillMaxSize()) { NutriPriceCircularProgress() }
         } else {
-            recipeList.forEach {
+            productList.forEach {
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(onClick = {
-                            composeNavigator.navigate(NutriPriceScreen.Recipe(it.id))
+                            composeNavigator.navigate(NutriPriceScreen.Product(it.id))
                         }),
-                    text = it.name,
+                    text = it.name
                 )
             }
         }

@@ -1,4 +1,4 @@
-package com.github.sarunasbucius.nutriprice.feature.common.model
+package com.github.sarunasbucius.nutriprice.feature.product.common.model
 
 import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
 import com.github.sarunasbucius.nutriprice.graphql.type.NutritionalValueInput

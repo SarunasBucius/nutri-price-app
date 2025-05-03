@@ -1,4 +1,4 @@
-package com.github.sarunasbucius.nutriprice.feature.insertProduct
+package com.github.sarunasbucius.nutriprice.feature.product.insertProduct
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -13,12 +13,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
-import com.github.sarunasbucius.nutriprice.feature.common.components.NutritionalValueInput
-import com.github.sarunasbucius.nutriprice.feature.common.components.ProductNameInput
-import com.github.sarunasbucius.nutriprice.feature.common.components.PurchaseInput
+import com.github.sarunasbucius.nutriprice.feature.product.common.components.NutritionalValueInput
+import com.github.sarunasbucius.nutriprice.feature.product.common.components.ProductNameInput
+import com.github.sarunasbucius.nutriprice.feature.product.common.components.PurchaseInput
 
 @Composable
 fun InsertProductScreen(
@@ -55,7 +56,7 @@ fun InsertProductScreen(
         )
 
         uiState.errors.forEach {
-            Text(text = it, color = androidx.compose.ui.graphics.Color.Red)
+            Text(text = it, color = Color.Red)
         }
 
         Button(onClick = { insertProductViewModel.insertProduct { composeNavigator.navigateUp() } }) {

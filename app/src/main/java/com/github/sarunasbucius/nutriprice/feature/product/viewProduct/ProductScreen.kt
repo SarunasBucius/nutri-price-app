@@ -1,4 +1,4 @@
-package com.github.sarunasbucius.nutriprice.feature.product
+package com.github.sarunasbucius.nutriprice.feature.product.viewProduct
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column

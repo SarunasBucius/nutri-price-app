@@ -4,15 +4,15 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.feature.home.HomeScreen
-import com.github.sarunasbucius.nutriprice.feature.insertProduct.InsertProductScreen
-import com.github.sarunasbucius.nutriprice.feature.insertRecipe.InsertRecipeScreen
-import com.github.sarunasbucius.nutriprice.feature.product.ProductScreen
 import com.github.sarunasbucius.nutriprice.feature.product.editNutritionalValue.EditNutritionalValueScreen
 import com.github.sarunasbucius.nutriprice.feature.product.editProductName.EditProductNameScreen
 import com.github.sarunasbucius.nutriprice.feature.product.editPurchase.EditPurchaseScreen
-import com.github.sarunasbucius.nutriprice.feature.productList.ProductListScreen
-import com.github.sarunasbucius.nutriprice.feature.recipe.RecipeScreen
-import com.github.sarunasbucius.nutriprice.feature.recipeList.RecipeListScreen
+import com.github.sarunasbucius.nutriprice.feature.product.insertProduct.InsertProductScreen
+import com.github.sarunasbucius.nutriprice.feature.product.productList.ProductListScreen
+import com.github.sarunasbucius.nutriprice.feature.product.viewProduct.ProductScreen
+import com.github.sarunasbucius.nutriprice.feature.recipe.insertRecipe.InsertRecipeScreen
+import com.github.sarunasbucius.nutriprice.feature.recipe.recipeList.RecipeListScreen
+import com.github.sarunasbucius.nutriprice.feature.recipe.viewRecipe.RecipeScreen
 
 fun NavGraphBuilder.nutriPriceNavigation() {
     composable<NutriPriceScreen.Home> {

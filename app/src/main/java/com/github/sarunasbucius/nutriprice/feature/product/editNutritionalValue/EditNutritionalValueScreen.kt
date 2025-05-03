@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.github.sarunasbucius.nutriprice.feature.common.components.NutritionalValueInput
+import com.github.sarunasbucius.nutriprice.feature.product.common.components.NutritionalValueInput
 
 @Composable
 fun EditNutritionalValueScreen(viewModel: EditNutritionalValueViewModel = hiltViewModel()) {

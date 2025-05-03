@@ -1,4 +1,4 @@
-package com.github.sarunasbucius.nutriprice.feature.insertRecipe
+package com.github.sarunasbucius.nutriprice.feature.recipe.insertRecipe
 
 import android.util.Log
 import androidx.compose.runtime.getValue

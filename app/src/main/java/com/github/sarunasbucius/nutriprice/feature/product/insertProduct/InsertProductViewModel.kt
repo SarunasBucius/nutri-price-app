@@ -1,4 +1,4 @@
-package com.github.sarunasbucius.nutriprice.feature.insertProduct
+package com.github.sarunasbucius.nutriprice.feature.product.insertProduct
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,8 +9,8 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
-import com.github.sarunasbucius.nutriprice.feature.common.model.NutritionalValueUi
-import com.github.sarunasbucius.nutriprice.feature.common.model.PurchaseDetailsUi
+import com.github.sarunasbucius.nutriprice.feature.product.common.model.NutritionalValueUi
+import com.github.sarunasbucius.nutriprice.feature.product.common.model.PurchaseDetailsUi
 import com.github.sarunasbucius.nutriprice.graphql.CreateProductMutation
 import com.github.sarunasbucius.nutriprice.graphql.type.ProductAggregateInput
 import dagger.hilt.android.lifecycle.HiltViewModel

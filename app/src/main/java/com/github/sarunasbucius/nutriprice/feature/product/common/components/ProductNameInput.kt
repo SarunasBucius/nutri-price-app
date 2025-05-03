@@ -1,4 +1,4 @@
-package com.github.sarunasbucius.nutriprice.feature.common.components
+package com.github.sarunasbucius.nutriprice.feature.product.common.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
