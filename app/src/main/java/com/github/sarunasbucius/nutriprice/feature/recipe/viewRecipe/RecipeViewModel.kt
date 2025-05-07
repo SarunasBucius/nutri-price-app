@@ -7,35 +7,33 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.sarunasbucius.nutriprice.core.model.Recipe
+import com.apollographql.apollo.ApolloClient
 import com.github.sarunasbucius.nutriprice.core.navigation.AppComposeNavigator
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
-import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceClient
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarController
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarEvent
-import com.skydoves.sandwich.message
-import com.skydoves.sandwich.onFailure
-import com.skydoves.sandwich.onSuccess
+import com.github.sarunasbucius.nutriprice.graphql.RecipeQuery
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class RecipeUi(
-    val recipe: Recipe = Recipe("", emptyList(), emptyList(), ""),
+    val recipe: RecipeQuery.Recipe = RecipeQuery.Recipe("", emptyList(), emptyList()),
+    val recipeName: String = "",
     val isLoading: Boolean = true
 )
 
 @HiltViewModel
 class RecipeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val nutriPriceClient: NutriPriceClient,
+    private val apolloClient: ApolloClient,
     private val navigation: AppComposeNavigator<NutriPriceScreen>,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    private val recipeId: String = savedStateHandle["recipeId"] ?: ""
+    private val recipeName: String = savedStateHandle["recipeName"] ?: ""
 
     var uiState by mutableStateOf(RecipeUi())
         private set
@@ -47,22 +45,18 @@ class RecipeViewModel @Inject constructor(
     fun fetchRecipe() {
         viewModelScope.launch(ioDispatcher) {
             uiState = uiState.copy(
+                recipeName = recipeName,
                 isLoading = true
             )
-            viewModelScope.launch(ioDispatcher) {
-                val result = nutriPriceClient.fetchRecipe(recipeId)
-                result.onSuccess {
-                    uiState = uiState.copy(
-                        recipe = data,
-                        isLoading = false
-                    )
-                }.onFailure {
-                    Log.e("RecipeViewModel", "fetch recipe: ${message()}")
-                    viewModelScope.launch {
-                        SnackbarController.sendEvent(SnackbarEvent("ERROR: something went wrong"))
-                        navigation.navigateUp()
-                    }
-                }
+            val response = apolloClient.query(RecipeQuery(recipeName)).execute()
+            uiState = uiState.copy(
+                recipe = response.data?.recipe ?: RecipeQuery.Recipe("", emptyList(), emptyList()),
+                isLoading = false
+            )
+            if (!response.errors.isNullOrEmpty()) {
+                Log.e("RecipeViewModel", response.errors.toString())
+                SnackbarController.sendEvent(SnackbarEvent("ERROR: something went wrong"))
+                navigation.navigateUp()
             }
         }
     }

@@ -7,16 +7,14 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
-import com.github.sarunasbucius.nutriprice.core.model.Ingredient
-import com.github.sarunasbucius.nutriprice.core.model.Recipe
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
-import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceClient
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarController
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarEvent
 import com.github.sarunasbucius.nutriprice.graphql.ProductsQuery
-import com.skydoves.sandwich.onError
-import com.skydoves.sandwich.onSuccess
+import com.github.sarunasbucius.nutriprice.graphql.UpdateRecipeMutation
+import com.github.sarunasbucius.nutriprice.graphql.type.IngredientInput
+import com.github.sarunasbucius.nutriprice.graphql.type.RecipeInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted
@@ -48,7 +46,6 @@ data class IngredientUi(
 @HiltViewModel
 class InsertRecipeViewModel @Inject constructor(
     private val apolloClient: ApolloClient,
-    private val nutriPriceClient: NutriPriceClient,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
     var uiState by mutableStateOf(InsertRecipeUiState())
@@ -128,26 +125,27 @@ class InsertRecipeViewModel @Inject constructor(
             return
         }
 
-        val recipe = Recipe(
-            name = uiState.recipeName,
-            notes = uiState.notes,
-            steps = uiState.steps.filter { it.isNotEmpty() },
-            ingredients = ingredients.map { ingredient ->
-                Ingredient(
-                    product = ingredient.name,
-                    amount = ingredient.amount.toDoubleOrNull(),
-                    unit = ingredient.unit,
-                    notes = ingredient.notes,
-                )
-            }
-        )
-
         viewModelScope.launch(ioDispatcher) {
-            val result = nutriPriceClient.insertRecipe(recipe)
-            result.onSuccess {
-                onRecipeInserted()
-            }.onError {
+            val result = apolloClient.mutation(
+                UpdateRecipeMutation(
+                    recipe = RecipeInput(
+                        recipeName = uiState.recipeName,
+                        steps = uiState.steps,
+                        notes = uiState.notes,
+                        ingredients = ingredients.map { ingredient ->
+                            IngredientInput(
+                                product = ingredient.name,
+                                quantity = ingredient.amount.toDoubleOrNull() ?: 0.0,
+                                unit = ingredient.unit,
+                                notes = ingredient.notes,
+                            )
+                        }
+                    ))).execute()
+            if (result.hasErrors()) {
                 uiState = uiState.copy(errors = listOf("Something went wrong"))
+                return@launch
+            } else {
+                onRecipeInserted()
             }
         }
     }

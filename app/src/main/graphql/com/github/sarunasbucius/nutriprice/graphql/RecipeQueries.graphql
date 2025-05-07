@@ -1,0 +1,34 @@
+query Recipes {
+    recipes
+}
+
+query Recipe($recipeName: String!) {
+    recipe(recipeName: $recipeName) {
+        notes
+        steps
+        ingredients {
+            product
+            quantity
+            unit
+            notes
+        }
+    }
+}
+
+query PreparedRecipesByDate($date: String!) {
+    preparedRecipesByDate(date: $date)
+}
+
+query PreparedRecipe($recipeName: String!, $date: String!) {
+    preparedRecipe(recipeName: $recipeName, date: $date) {
+        notes
+        steps
+        portion
+        ingredients {
+            product
+            quantity
+            unit
+            notes
+        }
+    }
+}

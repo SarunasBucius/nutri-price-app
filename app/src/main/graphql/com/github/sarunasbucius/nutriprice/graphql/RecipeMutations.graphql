@@ -1,0 +1,11 @@
+mutation UpdateRecipe($recipe: RecipeInput!) {
+    updateRecipe(recipe: $recipe)
+}
+
+mutation UpdatePreparedRecipe($recipe: PreparedRecipeInput!) {
+    updatePreparedRecipe(recipe: $recipe)
+}
+
+mutation PrepareRecipe($date: String!, $prepareRecipes: [PrepareRecipe!]!) {
+    prepareRecipe(date: $date, prepareRecipes: $prepareRecipes)
+}

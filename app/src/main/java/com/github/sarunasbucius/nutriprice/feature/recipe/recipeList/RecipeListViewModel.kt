@@ -4,13 +4,14 @@ import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.sarunasbucius.nutriprice.core.model.RecipeIdAndName
+import com.apollographql.apollo.ApolloClient
+import com.github.sarunasbucius.nutriprice.core.navigation.AppComposeNavigator
+import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
-import com.github.sarunasbucius.nutriprice.core.network.service.NutriPriceClient
-import com.skydoves.sandwich.message
-import com.skydoves.sandwich.onFailure
-import com.skydoves.sandwich.suspendOnSuccess
+import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarController
+import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarEvent
+import com.github.sarunasbucius.nutriprice.graphql.RecipesQuery
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,17 +27,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RecipeListViewModel @Inject constructor(
-    private val nutriPriceClient: NutriPriceClient,
+    private val apolloClient: ApolloClient,
+    private val navigation: AppComposeNavigator<NutriPriceScreen>,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<RecipeListUiState>(RecipeListUiState.Idle)
     internal val uiState = _uiState.asStateFlow()
 
-    val recipeList: StateFlow<List<RecipeIdAndName>> = flow {
-        nutriPriceClient.fetchRecipeList().suspendOnSuccess {
-            emit(data)
-        }.onFailure {
-            Log.e("RecipeListViewModel", message())
+    val recipeList: StateFlow<List<String>> = flow {
+        val response = apolloClient.query(RecipesQuery()).execute()
+        emit(response.data?.recipes ?: emptyList())
+
+        if (!response.errors.isNullOrEmpty()) {
+            Log.e("RecipeListViewModel", response.errors.toString())
+            SnackbarController.sendEvent(SnackbarEvent("ERROR: something went wrong"))
+            navigation.navigateUp()
         }
     }.onStart { _uiState.emit(RecipeListUiState.Loading) }
         .onCompletion { _uiState.emit(RecipeListUiState.Idle) }.flowOn(ioDispatcher).stateIn(

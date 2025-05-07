@@ -46,7 +46,7 @@ fun RecipeDetails(uiState: RecipeUi) {
             style = MaterialTheme.typography.labelSmall,
         )
         Text(
-            text = uiState.recipe.name
+            text = uiState.recipeName
         )
 
         if (uiState.recipe.notes.isNotEmpty()) {
@@ -89,7 +89,7 @@ fun RecipeDetails(uiState: RecipeUi) {
                         style = MaterialTheme.typography.labelSmall,
                     )
                     Text(
-                        text = "${it.amount} ${it.unit}"
+                        text = "${it.quantity} ${it.unit}"
                     )
                 }
             }

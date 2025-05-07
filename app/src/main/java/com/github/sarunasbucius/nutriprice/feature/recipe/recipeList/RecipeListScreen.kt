@@ -39,9 +39,9 @@ fun RecipeListScreen(recipeListViewModel: RecipeListViewModel = hiltViewModel())
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(onClick = {
-                            composeNavigator.navigate(NutriPriceScreen.Recipe(it.id))
+                            composeNavigator.navigate(NutriPriceScreen.Recipe(it))
                         }),
-                    text = it.name,
+                    text = it,
                 )
             }
         }
