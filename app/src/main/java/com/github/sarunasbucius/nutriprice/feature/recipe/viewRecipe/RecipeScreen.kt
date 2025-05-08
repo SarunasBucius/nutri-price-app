@@ -1,5 +1,6 @@
 package com.github.sarunasbucius.nutriprice.feature.recipe.viewRecipe
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.sarunasbucius.nutriprice.core.design.component.NutriPriceCircularProgress
+import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
+import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 
 @Composable
 fun RecipeScreen(viewModel: RecipeViewModel = hiltViewModel()) {
@@ -29,6 +35,7 @@ fun RecipeScreen(viewModel: RecipeViewModel = hiltViewModel()) {
 
 @Composable
 fun RecipeDetails(uiState: RecipeUi) {
+    val navigator = currentComposeNavigator
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -67,9 +74,11 @@ fun RecipeDetails(uiState: RecipeUi) {
         )
         uiState.recipe.ingredients.forEach {
             Row {
-                Column(modifier = Modifier
-                    .padding(end = 4.dp)
-                    .weight(1f)) {
+                Column(
+                    modifier = Modifier
+                        .padding(end = 4.dp)
+                        .weight(1f)
+                ) {
                     Text(
                         text = "Product",
                         style = MaterialTheme.typography.labelSmall,
@@ -117,5 +126,18 @@ fun RecipeDetails(uiState: RecipeUi) {
                 )
             }
         }
+        Icon(
+            modifier = Modifier
+                .clickable(onClick = {
+                    navigator.navigate(
+                        NutriPriceScreen.UpsertRecipe(
+                            uiState.recipeName
+                        )
+                    )
+                }),
+            tint = MaterialTheme.colorScheme.primary,
+            imageVector = Icons.Default.Edit,
+            contentDescription = "Edit recipe details"
+        )
     }
 }

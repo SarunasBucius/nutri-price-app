@@ -1,4 +1,4 @@
-package com.github.sarunasbucius.nutriprice.feature.recipe.insertRecipe
+package com.github.sarunasbucius.nutriprice.feature.recipe.upsertRecipe
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,12 +43,12 @@ import com.github.sarunasbucius.nutriprice.core.design.component.UnitDropdown
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 
 @Composable
-fun InsertRecipeScreen(
-    insertRecipeViewModel: InsertRecipeViewModel = hiltViewModel()
+fun UpsertRecipeScreen(
+    upsertRecipeViewModel: UpsertRecipeViewModel = hiltViewModel()
 ) {
-    val uiState = insertRecipeViewModel.uiState
+    val uiState = upsertRecipeViewModel.uiState
     val composeNavigator = currentComposeNavigator
-    val productList by insertRecipeViewModel.productList.collectAsStateWithLifecycle()
+    val productList by upsertRecipeViewModel.productList.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -60,7 +60,7 @@ fun InsertRecipeScreen(
         RecipeDetailsSection(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             uiState,
-            insertRecipeViewModel
+            upsertRecipeViewModel
         )
 
         Text(
@@ -73,8 +73,8 @@ fun InsertRecipeScreen(
         uiState.ingredients.forEachIndexed { index, ingredient ->
             IngredientSection(
                 ingredient = ingredient,
-                updateIngredient = { insertRecipeViewModel.updateIngredient(it, index) },
-                removeIngredient = { insertRecipeViewModel.removeIngredient(index) },
+                updateIngredient = { upsertRecipeViewModel.updateIngredient(it, index) },
+                removeIngredient = { upsertRecipeViewModel.removeIngredient(index) },
                 ingredientsNumber = uiState.ingredients.size,
                 productList = productList,
                 isProductListLoading = uiState.isLoading
@@ -85,8 +85,8 @@ fun InsertRecipeScreen(
             Text(text = it, color = Color.Red)
         }
 
-        Button(onClick = { insertRecipeViewModel.insertRecipe { composeNavigator.navigateUp() } }) {
-            Text(text = "Insert recipe")
+        Button(onClick = { upsertRecipeViewModel.upsertRecipe { composeNavigator.navigateUp() } }) {
+            Text(text = "Submit")
         }
     }
 }
@@ -94,8 +94,8 @@ fun InsertRecipeScreen(
 @Composable
 fun RecipeDetailsSection(
     modifier: Modifier = Modifier,
-    uiState: InsertRecipeUiState,
-    insertRecipeViewModel: InsertRecipeViewModel
+    uiState: UpsertRecipeUiState,
+    upsertRecipeViewModel: UpsertRecipeViewModel
 ) {
     Text(
         modifier = modifier.padding(8.dp),
@@ -107,7 +107,7 @@ fun RecipeDetailsSection(
             .fillMaxWidth()
             .padding(bottom = 8.dp),
         value = uiState.recipeName,
-        onValueChange = { insertRecipeViewModel.updateName(it) },
+        onValueChange = { upsertRecipeViewModel.updateName(it) },
         label = { Text("Recipe name") },
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
     )
@@ -117,7 +117,7 @@ fun RecipeDetailsSection(
             .fillMaxWidth()
             .padding(bottom = 8.dp),
         value = uiState.notes,
-        onValueChange = { insertRecipeViewModel.updateNotes(it) },
+        onValueChange = { upsertRecipeViewModel.updateNotes(it) },
         label = { Text("Notes") },
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
     )
@@ -132,7 +132,7 @@ fun RecipeDetailsSection(
                 modifier = Modifier.weight(1f),
                 value = step,
                 onValueChange = {
-                    insertRecipeViewModel.updateStep(it, index)
+                    upsertRecipeViewModel.updateStep(it, index)
                 },
                 label = { Text("Step ${index + 1}") },
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
@@ -140,7 +140,7 @@ fun RecipeDetailsSection(
             if (uiState.steps.size > 1) {
                 IconButton(
                     modifier = Modifier.align(Alignment.CenterVertically),
-                    onClick = { insertRecipeViewModel.removeStep(index) }
+                    onClick = { upsertRecipeViewModel.removeStep(index) }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Clear,

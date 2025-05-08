@@ -21,7 +21,7 @@ sealed interface NutriPriceScreen {
     data object RecipeList : NutriPriceScreen
 
     @Serializable
-    data object InsertRecipe : NutriPriceScreen
+    data class UpsertRecipe(val recipeName: String? = null) : NutriPriceScreen
 
     @Serializable
     data class Product(val productId: String) : NutriPriceScreen

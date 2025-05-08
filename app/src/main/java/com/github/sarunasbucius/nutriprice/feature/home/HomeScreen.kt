@@ -39,7 +39,7 @@ fun HomeScreen() {
             Text(text = "Recipe list")
         }
         Button(onClick = {
-            composeNavigator.navigate(NutriPriceScreen.InsertRecipe)
+            composeNavigator.navigate(NutriPriceScreen.UpsertRecipe())
         }) {
             Text(text = "Insert Recipe")
         }

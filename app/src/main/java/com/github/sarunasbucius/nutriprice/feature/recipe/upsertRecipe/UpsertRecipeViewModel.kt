@@ -1,17 +1,21 @@
-package com.github.sarunasbucius.nutriprice.feature.recipe.insertRecipe
+package com.github.sarunasbucius.nutriprice.feature.recipe.upsertRecipe
 
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
+import com.github.sarunasbucius.nutriprice.core.navigation.AppComposeNavigator
+import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarController
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarEvent
 import com.github.sarunasbucius.nutriprice.graphql.ProductsQuery
+import com.github.sarunasbucius.nutriprice.graphql.RecipeQuery
 import com.github.sarunasbucius.nutriprice.graphql.UpdateRecipeMutation
 import com.github.sarunasbucius.nutriprice.graphql.type.IngredientInput
 import com.github.sarunasbucius.nutriprice.graphql.type.RecipeInput
@@ -27,13 +31,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class InsertRecipeUiState(
+data class UpsertRecipeUiState(
     val recipeName: String = "",
     val notes: String = "",
     val steps: List<String> = listOf(""),
     val ingredients: List<IngredientUi> = listOf(IngredientUi()),
     val errors: List<String> = emptyList(),
-    val isLoading: Boolean = false
+    val isLoading: Boolean = true
 )
 
 data class IngredientUi(
@@ -44,11 +48,15 @@ data class IngredientUi(
 )
 
 @HiltViewModel
-class InsertRecipeViewModel @Inject constructor(
+class UpsertRecipeViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    private val navigation: AppComposeNavigator<NutriPriceScreen>,
     private val apolloClient: ApolloClient,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    var uiState by mutableStateOf(InsertRecipeUiState())
+    val recipeName: String? = savedStateHandle["recipeName"]
+
+    var uiState by mutableStateOf(UpsertRecipeUiState())
         private set
 
     val productList: StateFlow<List<String>> = flow {
@@ -56,7 +64,7 @@ class InsertRecipeViewModel @Inject constructor(
         emit(response.data?.products?.map { it.name } ?: emptyList())
 
         if (!response.errors.isNullOrEmpty()) {
-            Log.e("InsertRecipeViewModel", response.errors.toString())
+            Log.e("UpsertRecipeViewModel", response.errors.toString())
             SnackbarController.sendEvent(SnackbarEvent("ERROR: failed to fetch products"))
         }
     }.onStart { uiState = uiState.copy(isLoading = true) }
@@ -66,6 +74,43 @@ class InsertRecipeViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = emptyList()
         )
+
+    init {
+        if (recipeName != null) {
+            viewModelScope.launch(ioDispatcher) {
+                val result = apolloClient.query(RecipeQuery(recipeName)).execute()
+                if (result.hasErrors()) {
+                    SnackbarController.sendEvent(SnackbarEvent("ERROR: failed to fetch recipe"))
+                    navigation.navigateUp()
+                    return@launch
+                }
+
+                val steps: MutableList<String> =
+                    result.data?.recipe?.steps?.toMutableList() ?: mutableListOf()
+                steps.add("")
+
+                val ingredients: MutableList<IngredientUi> = result.data?.recipe?.ingredients?.map {
+                    IngredientUi(
+                        name = it.product,
+                        amount = it.quantity.toString(),
+                        unit = it.unit,
+                        notes = it.notes
+                    )
+                }?.toMutableList() ?: mutableListOf()
+                ingredients.add(IngredientUi())
+
+                uiState = uiState.copy(
+                    recipeName = recipeName,
+                    notes = result.data?.recipe?.notes ?: "",
+                    steps = steps,
+                    ingredients = ingredients,
+                    isLoading = false
+                )
+            }
+        } else {
+            uiState = uiState.copy(isLoading = false)
+        }
+    }
 
     fun updateName(name: String) {
         uiState = uiState.copy(recipeName = name)
@@ -105,7 +150,7 @@ class InsertRecipeViewModel @Inject constructor(
         uiState = uiState.copy(ingredients = ingredients)
     }
 
-    fun insertRecipe(onRecipeInserted: () -> Unit) {
+    fun upsertRecipe(onRecipeUpsert: () -> Unit) {
         val errors = mutableListOf<String>()
         if (uiState.recipeName.isEmpty()) {
             errors.add("Name cannot be empty")
@@ -125,12 +170,14 @@ class InsertRecipeViewModel @Inject constructor(
             return
         }
 
+        val steps = uiState.steps.filter { it.isNotEmpty() }
+
         viewModelScope.launch(ioDispatcher) {
             val result = apolloClient.mutation(
                 UpdateRecipeMutation(
                     recipe = RecipeInput(
                         recipeName = uiState.recipeName,
-                        steps = uiState.steps,
+                        steps = steps,
                         notes = uiState.notes,
                         ingredients = ingredients.map { ingredient ->
                             IngredientInput(
@@ -145,7 +192,7 @@ class InsertRecipeViewModel @Inject constructor(
                 uiState = uiState.copy(errors = listOf("Something went wrong"))
                 return@launch
             } else {
-                onRecipeInserted()
+                onRecipeUpsert()
             }
         }
     }
