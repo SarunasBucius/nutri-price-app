@@ -6,6 +6,6 @@ mutation UpdatePreparedRecipe($recipe: PreparedRecipeInput!) {
     updatePreparedRecipe(recipe: $recipe)
 }
 
-mutation PrepareRecipe($date: String!, $prepareRecipes: [PrepareRecipe!]!) {
-    prepareRecipe(date: $date, prepareRecipes: $prepareRecipes)
+mutation PlanRecipes($date: String!, $planRecipes: [PlanRecipe!]!) {
+    planRecipes(date: $date, planRecipes: $planRecipes)
 }
