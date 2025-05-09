@@ -43,5 +43,11 @@ fun HomeScreen() {
         }) {
             Text(text = "Insert Recipe")
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = {
+            composeNavigator.navigate(NutriPriceScreen.PreparedRecipes)
+        }) {
+            Text(text = "Prepared Recipes")
+        }
     }
 }
