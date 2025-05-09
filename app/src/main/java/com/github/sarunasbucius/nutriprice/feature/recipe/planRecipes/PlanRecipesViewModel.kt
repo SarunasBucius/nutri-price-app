@@ -73,7 +73,7 @@ class PlanRecipesViewModel @Inject constructor(
         val recipes = uiState.plannedRecipes.toMutableList()
         recipes[index] = recipes[index].copy(portion = portion)
         val lastRecipe = recipes.last()
-        if (lastRecipe.recipeName.isNotEmpty() || lastRecipe.portion.isNotEmpty()) {
+        if (lastRecipe.recipeName.isNotEmpty()) {
             recipes.add(PlanRecipeUi())
         }
         uiState = uiState.copy(plannedRecipes = recipes)
@@ -83,7 +83,7 @@ class PlanRecipesViewModel @Inject constructor(
         val recipes = uiState.plannedRecipes.toMutableList()
         recipes[index] = recipes[index].copy(recipeName = recipeName)
         val lastRecipe = recipes.last()
-        if (lastRecipe.recipeName.isNotEmpty() || lastRecipe.portion.isNotEmpty()) {
+        if (lastRecipe.recipeName.isNotEmpty()) {
             recipes.add(PlanRecipeUi())
         }
         uiState = uiState.copy(plannedRecipes = recipes)
