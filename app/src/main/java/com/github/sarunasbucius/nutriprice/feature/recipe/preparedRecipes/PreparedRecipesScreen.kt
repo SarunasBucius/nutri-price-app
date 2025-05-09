@@ -44,6 +44,12 @@ fun PreparedRecipesScreen(viewModel: PreparedRecipesViewModel = hiltViewModel())
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = {
+                        navigation.navigate(
+                            NutriPriceScreen.PreparedRecipe(
+                                it,
+                                uiState.value.date
+                            )
+                        )
                     }),
                 text = it,
             )

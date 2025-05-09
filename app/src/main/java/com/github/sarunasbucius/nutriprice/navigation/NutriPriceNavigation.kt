@@ -14,6 +14,7 @@ import com.github.sarunasbucius.nutriprice.feature.recipe.planRecipes.PlanRecipe
 import com.github.sarunasbucius.nutriprice.feature.recipe.preparedRecipes.PreparedRecipesScreen
 import com.github.sarunasbucius.nutriprice.feature.recipe.recipeList.RecipeListScreen
 import com.github.sarunasbucius.nutriprice.feature.recipe.upsertRecipe.UpsertRecipeScreen
+import com.github.sarunasbucius.nutriprice.feature.recipe.viewPreparedRecipe.PreparedRecipeScreen
 import com.github.sarunasbucius.nutriprice.feature.recipe.viewRecipe.RecipeScreen
 
 fun NavGraphBuilder.nutriPriceNavigation() {
@@ -67,5 +68,9 @@ fun NavGraphBuilder.nutriPriceNavigation() {
 
     composable<NutriPriceScreen.PlanRecipes> {
         PlanRecipesScreen()
+    }
+
+    composable<NutriPriceScreen.PreparedRecipe> {
+        PreparedRecipeScreen()
     }
 }
