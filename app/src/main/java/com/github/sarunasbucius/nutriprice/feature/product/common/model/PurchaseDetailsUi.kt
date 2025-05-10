@@ -1,6 +1,6 @@
 package com.github.sarunasbucius.nutriprice.feature.product.common.model
 
-import com.github.sarunasbucius.nutriprice.core.model.PurchaseDetails
+import com.github.sarunasbucius.nutriprice.core.navigation.model.PurchaseDetailsNav
 import com.github.sarunasbucius.nutriprice.graphql.type.PurchaseInput
 
 data class PurchaseDetailsUi(
@@ -38,7 +38,7 @@ data class PurchaseDetailsUi(
     }
 
     companion object {
-        fun fromApiModel(purchaseDetails: PurchaseDetails): PurchaseDetailsUi {
+        fun fromApiModel(purchaseDetails: PurchaseDetailsNav): PurchaseDetailsUi {
             return PurchaseDetailsUi(
                 date = purchaseDetails.date,
                 retailer = purchaseDetails.retailer,

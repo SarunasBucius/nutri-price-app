@@ -1,6 +1,6 @@
 package com.github.sarunasbucius.nutriprice.feature.product.common.model
 
-import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
+import com.github.sarunasbucius.nutriprice.core.navigation.model.NutritionalValueNav
 import com.github.sarunasbucius.nutriprice.graphql.type.NutritionalValueInput
 
 data class NutritionalValueUi(
@@ -54,7 +54,7 @@ data class NutritionalValueUi(
     }
 
     companion object {
-        fun fromApiModel(nutritionalValue: NutritionalValue): NutritionalValueUi {
+        fun fromApiModel(nutritionalValue: NutritionalValueNav): NutritionalValueUi {
             return NutritionalValueUi(
                 unit = nutritionalValue.unit ?: "",
                 energyValueKcal = nutritionalValue.energyValueKcal?.takeIf { it != 0.0 }?.toString()

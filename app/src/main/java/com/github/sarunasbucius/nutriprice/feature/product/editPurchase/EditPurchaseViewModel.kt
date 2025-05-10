@@ -7,9 +7,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
-import com.github.sarunasbucius.nutriprice.core.model.PurchaseDetails
 import com.github.sarunasbucius.nutriprice.core.navigation.AppComposeNavigator
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
+import com.github.sarunasbucius.nutriprice.core.navigation.model.PurchaseDetailsNav
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarController
@@ -35,7 +35,7 @@ class EditPurchaseViewModel @Inject constructor(
     private val navigation: AppComposeNavigator<NutriPriceScreen>,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    val purchaseDetails: PurchaseDetails? = savedStateHandle["purchaseDetails"]
+    val purchaseDetails: PurchaseDetailsNav? = savedStateHandle["purchaseDetails"]
     var uiState by mutableStateOf(EditPurchaseUiState())
         private set
 

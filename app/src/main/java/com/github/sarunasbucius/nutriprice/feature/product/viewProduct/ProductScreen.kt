@@ -33,10 +33,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
-import com.github.sarunasbucius.nutriprice.core.model.PurchaseDetails
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
+import com.github.sarunasbucius.nutriprice.core.navigation.model.NutritionalValueNav
+import com.github.sarunasbucius.nutriprice.core.navigation.model.PurchaseDetailsNav
 import com.github.sarunasbucius.nutriprice.graphql.ProductAggregateQuery
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -184,7 +184,7 @@ fun ProductDetails(uiState: ProductAggregateUi, onVarietySelected: (String) -> U
                             NutriPriceScreen.EditNutritionalValue(
                                 productId = uiState.productId,
                                 varietyName = uiState.selectedVariety.varietyName,
-                                nutritionalValue = NutritionalValue(
+                                nutritionalValue = NutritionalValueNav(
                                     unit = uiState.selectedVariety.nutritionalValue.unit,
                                     energyValueKcal = uiState.selectedVariety.nutritionalValue.energyValueKcal,
                                     fat = uiState.selectedVariety.nutritionalValue.fat,
@@ -208,7 +208,7 @@ fun ProductDetails(uiState: ProductAggregateUi, onVarietySelected: (String) -> U
                     NutriPriceScreen.EditNutritionalValue(
                         productId = uiState.productId,
                         varietyName = uiState.selectedVariety.varietyName,
-                        nutritionalValue = NutritionalValue()
+                        nutritionalValue = NutritionalValueNav()
                     )
                 )
             }) {
@@ -262,7 +262,7 @@ fun ProductDetails(uiState: ProductAggregateUi, onVarietySelected: (String) -> U
                     .clickable(onClick = {
                         navigator.navigate(
                             NutriPriceScreen.EditPurchase(
-                                purchaseDetails = PurchaseDetails(
+                                purchaseDetails = PurchaseDetailsNav(
                                     id = purchasedProduct.id,
                                     date = purchasedProduct.date,
                                     retailer = purchasedProduct.retailer,

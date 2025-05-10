@@ -2,30 +2,45 @@ package com.github.sarunasbucius.nutriprice.core.navigation.model
 
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import androidx.core.os.BundleCompat
 import androidx.navigation.NavType
-import com.github.sarunasbucius.nutriprice.core.model.PurchaseDetails
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-object PurchaseDetailsType : NavType<PurchaseDetails>(isNullableAllowed = false) {
+@Serializable
+@Parcelize
+data class PurchaseDetailsNav(
+    val id: String,
+    val date: String,
+    val retailer: String,
+    val price: Double?,
+    val amount: Double?,
+    val unit: String,
+    val notes: String = ""
+) : Parcelable
+
+
+object PurchaseDetailsType : NavType<PurchaseDetailsNav>(isNullableAllowed = false) {
     override fun get(
         bundle: Bundle,
         key: String
-    ): PurchaseDetails? = BundleCompat.getParcelable(bundle, key, PurchaseDetails::class.java)
+    ): PurchaseDetailsNav? = BundleCompat.getParcelable(bundle, key, PurchaseDetailsNav::class.java)
 
-    override fun parseValue(value: String): PurchaseDetails {
+    override fun parseValue(value: String): PurchaseDetailsNav {
         return Json.decodeFromString(Uri.decode(value))
     }
 
     override fun put(
         bundle: Bundle,
         key: String,
-        value: PurchaseDetails
+        value: PurchaseDetailsNav
     ) {
         bundle.putParcelable(key, value)
     }
 
-    override fun serializeAsValue(value: PurchaseDetails): String =
+    override fun serializeAsValue(value: PurchaseDetailsNav): String =
         Uri.encode(Json.encodeToString(value))
 }

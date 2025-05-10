@@ -8,9 +8,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
-import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
 import com.github.sarunasbucius.nutriprice.core.navigation.AppComposeNavigator
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
+import com.github.sarunasbucius.nutriprice.core.navigation.model.NutritionalValueNav
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarController
@@ -38,7 +38,7 @@ class EditNutritionalValueViewModel @Inject constructor(
 ) : ViewModel() {
     val productId = savedStateHandle["productId"] ?: ""
     val varietyName = savedStateHandle["varietyName"] ?: ""
-    val nutritionalValue: NutritionalValue? = savedStateHandle["nutritionalValue"]
+    val nutritionalValue: NutritionalValueNav? = savedStateHandle["nutritionalValue"]
     var uiState by mutableStateOf(EditNutritionalValueUiState())
         private set
 

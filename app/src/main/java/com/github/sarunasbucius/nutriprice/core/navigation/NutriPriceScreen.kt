@@ -1,10 +1,10 @@
 package com.github.sarunasbucius.nutriprice.core.navigation
 
-import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
-import com.github.sarunasbucius.nutriprice.core.model.PurchaseDetails
+import com.github.sarunasbucius.nutriprice.core.navigation.model.NutritionalValueNav
 import com.github.sarunasbucius.nutriprice.core.navigation.model.NutritionalValueType
 import com.github.sarunasbucius.nutriprice.core.navigation.model.PreparedRecipeNav
 import com.github.sarunasbucius.nutriprice.core.navigation.model.PreparedRecipeType
+import com.github.sarunasbucius.nutriprice.core.navigation.model.PurchaseDetailsNav
 import com.github.sarunasbucius.nutriprice.core.navigation.model.PurchaseDetailsType
 import kotlinx.serialization.Serializable
 import kotlin.reflect.typeOf
@@ -36,9 +36,9 @@ sealed interface NutriPriceScreen {
     ) : NutriPriceScreen
 
     @Serializable
-    data class EditPurchase(val purchaseDetails: PurchaseDetails) : NutriPriceScreen {
+    data class EditPurchase(val purchaseDetails: PurchaseDetailsNav) : NutriPriceScreen {
         companion object {
-            val typeMap = mapOf(typeOf<PurchaseDetails>() to PurchaseDetailsType)
+            val typeMap = mapOf(typeOf<PurchaseDetailsNav>() to PurchaseDetailsType)
         }
     }
 
@@ -46,10 +46,10 @@ sealed interface NutriPriceScreen {
     data class EditNutritionalValue(
         val productId: String,
         val varietyName: String,
-        val nutritionalValue: NutritionalValue
+        val nutritionalValue: NutritionalValueNav
     ) : NutriPriceScreen {
         companion object {
-            val typeMap = mapOf(typeOf<NutritionalValue>() to NutritionalValueType)
+            val typeMap = mapOf(typeOf<NutritionalValueNav>() to NutritionalValueType)
         }
     }
 
