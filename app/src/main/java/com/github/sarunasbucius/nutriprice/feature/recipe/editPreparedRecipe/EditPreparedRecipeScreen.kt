@@ -1,4 +1,4 @@
-package com.github.sarunasbucius.nutriprice.feature.recipe.upsertRecipe
+package com.github.sarunasbucius.nutriprice.feature.recipe.editPreparedRecipe
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,18 +38,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.github.sarunasbucius.nutriprice.core.design.component.DatePicker
 import com.github.sarunasbucius.nutriprice.core.design.component.NutriPriceCircularProgress
 import com.github.sarunasbucius.nutriprice.core.design.component.UnitDropdown
-import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 import com.github.sarunasbucius.nutriprice.feature.recipe.common.model.IngredientUi
 
 @Composable
-fun UpsertRecipeScreen(
-    upsertRecipeViewModel: UpsertRecipeViewModel = hiltViewModel()
-) {
-    val uiState = upsertRecipeViewModel.uiState
-    val composeNavigator = currentComposeNavigator
-    val productList by upsertRecipeViewModel.productList.collectAsStateWithLifecycle()
+fun EditPreparedRecipeScreen(viewModel: EditPreparedRecipeViewModel = hiltViewModel()) {
+    val uiState = viewModel.uiState
+    val productList by viewModel.productList.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -58,10 +55,26 @@ fun UpsertRecipeScreen(
             .verticalScroll(rememberScrollState())
             .padding(bottom = WindowInsets.ime.asPaddingValues().calculateBottomPadding())
     ) {
-        RecipeDetailsSection(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            uiState,
-            upsertRecipeViewModel
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(8.dp),
+            text = "Recipe: ${uiState.recipeName}",
+        )
+        DatePicker(
+            date = uiState.preparedDate,
+            onDateChange = { viewModel.updatePreparedDate(it) },
+            label = "Prepared date"
+        )
+
+        TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            value = uiState.portion,
+            onValueChange = { viewModel.updatePortion(it) },
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            label = { Text("Portion") }
         )
 
         Text(
@@ -74,11 +87,12 @@ fun UpsertRecipeScreen(
         uiState.ingredients.forEachIndexed { index, ingredient ->
             IngredientSection(
                 ingredient = ingredient,
-                updateIngredient = { upsertRecipeViewModel.updateIngredient(it, index) },
-                removeIngredient = { upsertRecipeViewModel.removeIngredient(index) },
+                updateIngredient = { viewModel.updateIngredient(it, index) },
+                removeIngredient = { viewModel.removeIngredient(index) },
                 ingredientsNumber = uiState.ingredients.size,
                 productList = productList,
-                isProductListLoading = uiState.isLoading
+                isProductListLoading = uiState.isLoading,
+                multiplyIngredientAmountByPortion = { viewModel.multiplyIngredientAmountByPortion(it) },
             )
         }
 
@@ -86,72 +100,12 @@ fun UpsertRecipeScreen(
             Text(text = it, color = Color.Red)
         }
 
-        Button(onClick = { upsertRecipeViewModel.upsertRecipe { composeNavigator.navigateUp() } }) {
+        Button(onClick = { viewModel.submitPreparedRecipe() }) {
             Text(text = "Submit")
         }
     }
 }
 
-@Composable
-fun RecipeDetailsSection(
-    modifier: Modifier = Modifier,
-    uiState: UpsertRecipeUiState,
-    upsertRecipeViewModel: UpsertRecipeViewModel
-) {
-    Text(
-        modifier = modifier.padding(8.dp),
-        text = "Recipe details",
-    )
-
-    TextField(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-        value = uiState.recipeName,
-        onValueChange = { upsertRecipeViewModel.updateName(it) },
-        label = { Text("Recipe name") },
-        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-    )
-
-    TextField(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-        value = uiState.notes,
-        onValueChange = { upsertRecipeViewModel.updateNotes(it) },
-        label = { Text("Notes") },
-        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-    )
-
-    uiState.steps.forEachIndexed { index, step ->
-        Row(
-            modifier = Modifier
-                .padding(bottom = 8.dp)
-                .fillMaxWidth()
-        ) {
-            TextField(
-                modifier = Modifier.weight(1f),
-                value = step,
-                onValueChange = {
-                    upsertRecipeViewModel.updateStep(it, index)
-                },
-                label = { Text("Step ${index + 1}") },
-                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-            )
-            if (uiState.steps.size > 1) {
-                IconButton(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    onClick = { upsertRecipeViewModel.removeStep(index) }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = "Remove step"
-                    )
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun IngredientSection(
@@ -160,7 +114,8 @@ fun IngredientSection(
     removeIngredient: () -> Unit,
     ingredientsNumber: Int,
     productList: List<String>,
-    isProductListLoading: Boolean
+    isProductListLoading: Boolean,
+    multiplyIngredientAmountByPortion: (String) -> String
 ) {
     Row(
         modifier = Modifier
@@ -188,8 +143,8 @@ fun IngredientSection(
     }
     Row(
         modifier = Modifier
-            .padding(bottom = 8.dp)
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         TextField(
             modifier = Modifier
@@ -202,7 +157,7 @@ fun IngredientSection(
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
 
             label = { Text("Amount") })
-
+        Text(text = "(${multiplyIngredientAmountByPortion(ingredient.amount)})")
         UnitDropdown(
             modifier = Modifier
                 .weight(1f)
@@ -215,16 +170,6 @@ fun IngredientSection(
             }
         )
     }
-
-    TextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = ingredient.notes,
-        onValueChange = {
-            updateIngredient(ingredient.copy(notes = it))
-        },
-        label = { Text("Notes") },
-        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-    )
 
     Spacer(modifier = Modifier.height(16.dp))
 }

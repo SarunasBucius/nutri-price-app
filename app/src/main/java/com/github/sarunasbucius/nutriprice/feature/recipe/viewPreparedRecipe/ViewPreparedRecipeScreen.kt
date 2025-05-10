@@ -21,7 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.sarunasbucius.nutriprice.core.design.component.NutriPriceCircularProgress
+import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
+import com.github.sarunasbucius.nutriprice.core.navigation.model.IngredientNav
+import com.github.sarunasbucius.nutriprice.core.navigation.model.PreparedRecipeNav
 import java.text.DecimalFormat
 
 @Composable
@@ -35,7 +38,7 @@ fun PreparedRecipeScreen(viewModel: ViewPreparedRecipeViewModel = hiltViewModel(
 
 @Composable
 fun PreparedRecipeDetails(uiState: PreparedRecipeUiState) {
-    currentComposeNavigator
+    val navigation = currentComposeNavigator
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -145,7 +148,25 @@ fun PreparedRecipeDetails(uiState: PreparedRecipeUiState) {
         Icon(
             modifier = Modifier
                 .clickable(onClick = {
-
+                    navigation.navigate(
+                        NutriPriceScreen.EditPreparedRecipe(
+                            PreparedRecipeNav(
+                                name = uiState.recipeName,
+                                ingredients = uiState.recipe.ingredients.map {
+                                    IngredientNav(
+                                        product = it.product,
+                                        amount = it.quantity,
+                                        unit = it.unit,
+                                        notes = it.notes
+                                    )
+                                },
+                                steps = uiState.recipe.steps,
+                                notes = uiState.recipe.notes,
+                                preparedDate = uiState.preparedDate,
+                                portion = uiState.recipe.portion
+                            )
+                        )
+                    )
                 }),
             tint = MaterialTheme.colorScheme.primary,
             imageVector = Icons.Default.Edit,

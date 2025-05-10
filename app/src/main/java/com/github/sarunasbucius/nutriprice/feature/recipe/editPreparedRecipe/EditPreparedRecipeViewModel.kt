@@ -1,4 +1,4 @@
-package com.github.sarunasbucius.nutriprice.feature.recipe.upsertRecipe
+package com.github.sarunasbucius.nutriprice.feature.recipe.editPreparedRecipe
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -10,16 +10,16 @@ import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
 import com.github.sarunasbucius.nutriprice.core.navigation.AppComposeNavigator
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
+import com.github.sarunasbucius.nutriprice.core.navigation.model.PreparedRecipeNav
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarController
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarEvent
 import com.github.sarunasbucius.nutriprice.feature.recipe.common.model.IngredientUi
 import com.github.sarunasbucius.nutriprice.graphql.ProductsQuery
-import com.github.sarunasbucius.nutriprice.graphql.RecipeQuery
-import com.github.sarunasbucius.nutriprice.graphql.UpdateRecipeMutation
+import com.github.sarunasbucius.nutriprice.graphql.UpdatePreparedRecipeMutation
 import com.github.sarunasbucius.nutriprice.graphql.type.IngredientInput
-import com.github.sarunasbucius.nutriprice.graphql.type.RecipeInput
+import com.github.sarunasbucius.nutriprice.graphql.type.PreparedRecipeInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,27 +30,31 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 import javax.inject.Inject
 
-data class UpsertRecipeUiState(
+data class EditPreparedRecipeUiState(
     val recipeName: String = "",
     val notes: String = "",
     val steps: List<String> = listOf(""),
     val ingredients: List<IngredientUi> = listOf(IngredientUi()),
+    val preparedDate: String = "",
+    val portion: String = "",
     val errors: List<String> = emptyList(),
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val portionNumber: Double = 1.0
 )
 
 @HiltViewModel
-class UpsertRecipeViewModel @Inject constructor(
+class EditPreparedRecipeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val navigation: AppComposeNavigator<NutriPriceScreen>,
     private val apolloClient: ApolloClient,
+    private val navigation: AppComposeNavigator<NutriPriceScreen>,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    val recipeName: String? = savedStateHandle["recipeName"]
+    val preparedRecipe: PreparedRecipeNav? = savedStateHandle["preparedRecipe"]
 
-    var uiState by mutableStateOf(UpsertRecipeUiState())
+    var uiState by mutableStateOf(EditPreparedRecipeUiState())
         private set
 
     val productList: StateFlow<List<String>> = flow {
@@ -58,7 +62,7 @@ class UpsertRecipeViewModel @Inject constructor(
         emit(response.data?.products?.map { it.name } ?: emptyList())
 
         if (!response.errors.isNullOrEmpty()) {
-            Log.e("UpsertRecipeViewModel", response.errors.toString())
+            Log.e("EditPreparedRecipeViewModel", response.errors.toString())
             SnackbarController.sendEvent(SnackbarEvent("ERROR: failed to fetch products"))
         }
     }.onStart { uiState = uiState.copy(isLoading = true) }
@@ -70,57 +74,42 @@ class UpsertRecipeViewModel @Inject constructor(
         )
 
     init {
-        if (recipeName != null) {
-            viewModelScope.launch(ioDispatcher) {
-                val result = apolloClient.query(RecipeQuery(recipeName)).execute()
-                if (result.hasErrors()) {
-                    SnackbarController.sendEvent(SnackbarEvent("ERROR: failed to fetch recipe"))
-                    navigation.navigateUp()
-                    return@launch
-                }
-
-                val steps: MutableList<String> =
-                    result.data?.recipe?.steps?.toMutableList() ?: mutableListOf()
-                steps.add("")
-
-                val ingredients: MutableList<IngredientUi> = result.data?.recipe?.ingredients?.map {
-                    IngredientUi(
-                        name = it.product,
-                        amount = it.quantity.toString(),
-                        unit = it.unit,
-                        notes = it.notes
-                    )
-                }?.toMutableList() ?: mutableListOf()
-                ingredients.add(IngredientUi())
-
-                uiState = uiState.copy(
-                    recipeName = recipeName,
-                    notes = result.data?.recipe?.notes ?: "",
-                    steps = steps,
-                    ingredients = ingredients,
-                    isLoading = false
-                )
+        if (preparedRecipe == null) {
+            viewModelScope.launch {
+                SnackbarController.sendEvent(SnackbarEvent("ERROR: something went wrong"))
+                navigation.navigateUp()
             }
         } else {
-            uiState = uiState.copy(isLoading = false)
+            uiState = uiState.copy(
+                recipeName = preparedRecipe.name,
+                notes = preparedRecipe.notes,
+                steps = preparedRecipe.steps,
+                ingredients = preparedRecipe.ingredients.map {
+                    IngredientUi(
+                        it.product,
+                        it.amount.toString(),
+                        it.unit,
+                        it.notes
+                    )
+                } + IngredientUi(),
+                preparedDate = preparedRecipe.preparedDate,
+                portion = preparedRecipe.portion.toString(),
+                isLoading = false,
+                portionNumber = preparedRecipe.portion
+            )
         }
     }
 
-    fun updateName(name: String) {
-        uiState = uiState.copy(recipeName = name)
+    fun updatePreparedDate(date: String) {
+        uiState = uiState.copy(preparedDate = date)
     }
 
-    fun updateNotes(notes: String) {
-        uiState = uiState.copy(notes = notes)
-    }
-
-    fun updateStep(step: String, index: Int) {
-        val steps = uiState.steps.toMutableList()
-        steps[index] = step
-        if (steps.last().isNotEmpty()) {
-            steps.add("")
+    fun updatePortion(portions: String) {
+        uiState = uiState.copy(portion = portions)
+        val portionsNumber = portions.toDoubleOrNull()
+        if (portionsNumber != null) {
+            uiState = uiState.copy(portionNumber = portionsNumber)
         }
-        uiState = uiState.copy(steps = steps)
     }
 
     fun updateIngredient(ingredient: IngredientUi, index: Int) {
@@ -132,26 +121,23 @@ class UpsertRecipeViewModel @Inject constructor(
         uiState = uiState.copy(ingredients = ingredients)
     }
 
-    fun removeStep(index: Int) {
-        val steps = uiState.steps.toMutableList()
-        steps.removeAt(index)
-        uiState = uiState.copy(steps = steps)
-    }
-
     fun removeIngredient(index: Int) {
         val ingredients = uiState.ingredients.toMutableList()
         ingredients.removeAt(index)
         uiState = uiState.copy(ingredients = ingredients)
     }
 
-    fun upsertRecipe(onRecipeUpsert: () -> Unit) {
+    fun multiplyIngredientAmountByPortion(ingredientAmount: String): String {
+        val amount = ingredientAmount.toDoubleOrNull() ?: return ""
+        val multiplied = amount * uiState.portionNumber
+        val formatter = DecimalFormat("0.##")
+        return formatter.format(multiplied)
+    }
+
+    fun submitPreparedRecipe() {
         val errors = mutableListOf<String>()
-        if (uiState.recipeName.isEmpty()) {
-            errors.add("Name cannot be empty")
-        }
 
         val ingredients = uiState.ingredients.filter { it.name.isNotEmpty() }
-
         for (ingredient in ingredients) {
             if (ingredient.amount.isNotEmpty() && ingredient.amount.toDoubleOrNull() == null) {
                 errors.add("Ingredient amount must be a number")
@@ -159,20 +145,24 @@ class UpsertRecipeViewModel @Inject constructor(
             }
         }
 
+        if (uiState.portion.toDoubleOrNull() == null) {
+            errors.add("Portion must be a number")
+        }
+
         uiState = uiState.copy(errors = errors)
         if (errors.isNotEmpty()) {
             return
         }
 
-        val steps = uiState.steps.filter { it.isNotEmpty() }
-
         viewModelScope.launch(ioDispatcher) {
             val result = apolloClient.mutation(
-                UpdateRecipeMutation(
-                    recipe = RecipeInput(
+                UpdatePreparedRecipeMutation(
+                    recipe = PreparedRecipeInput(
                         recipeName = uiState.recipeName,
-                        steps = steps,
+                        steps = uiState.steps,
                         notes = uiState.notes,
+                        preparedDate = uiState.preparedDate,
+                        portion = uiState.portionNumber,
                         ingredients = ingredients.map { ingredient ->
                             IngredientInput(
                                 product = ingredient.name,
@@ -185,9 +175,8 @@ class UpsertRecipeViewModel @Inject constructor(
             if (result.hasErrors()) {
                 uiState = uiState.copy(errors = listOf("Something went wrong"))
                 return@launch
-            } else {
-                onRecipeUpsert()
             }
+            navigation.navigateUp()
         }
     }
 }

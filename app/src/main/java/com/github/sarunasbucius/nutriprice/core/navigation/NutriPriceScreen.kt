@@ -3,6 +3,8 @@ package com.github.sarunasbucius.nutriprice.core.navigation
 import com.github.sarunasbucius.nutriprice.core.model.NutritionalValue
 import com.github.sarunasbucius.nutriprice.core.model.PurchaseDetails
 import com.github.sarunasbucius.nutriprice.core.navigation.model.NutritionalValueType
+import com.github.sarunasbucius.nutriprice.core.navigation.model.PreparedRecipeNav
+import com.github.sarunasbucius.nutriprice.core.navigation.model.PreparedRecipeType
 import com.github.sarunasbucius.nutriprice.core.navigation.model.PurchaseDetailsType
 import kotlinx.serialization.Serializable
 import kotlin.reflect.typeOf
@@ -62,5 +64,12 @@ sealed interface NutriPriceScreen {
 
     @Serializable
     data class PreparedRecipe(val recipeName: String, val preparedDate: String) : NutriPriceScreen
+
+    @Serializable
+    data class EditPreparedRecipe(val preparedRecipe: PreparedRecipeNav) : NutriPriceScreen {
+        companion object {
+            val typeMap = mapOf(typeOf<PreparedRecipeNav>() to PreparedRecipeType)
+        }
+    }
 }
 
