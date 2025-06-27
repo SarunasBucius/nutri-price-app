@@ -4,21 +4,22 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
-import com.github.sarunasbucius.nutriprice.core.navigation.AppComposeNavigator
+import com.github.sarunasbucius.nutriprice.core.navigation.NavigationManager
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarController
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarEvent
 import com.github.sarunasbucius.nutriprice.graphql.RecipeQuery
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class RecipeUi(
     val recipe: RecipeQuery.Recipe = RecipeQuery.Recipe("", emptyList(), emptyList()),
@@ -26,17 +27,22 @@ data class RecipeUi(
     val isLoading: Boolean = true
 )
 
-@HiltViewModel
-class RecipeViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = RecipeViewModel.Factory::class)
+class RecipeViewModel @AssistedInject constructor(
+    @Assisted val navKey: NutriPriceScreen.Recipe,
     private val apolloClient: ApolloClient,
-    private val navigation: AppComposeNavigator<NutriPriceScreen>,
+    private val navigation: NavigationManager,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    private val recipeName: String = savedStateHandle["recipeName"] ?: ""
+    private val recipeName: String = navKey.recipeName
 
     var uiState by mutableStateOf(RecipeUi())
         private set
+
+    @AssistedFactory
+    interface Factory {
+        fun create(navKey: NutriPriceScreen.Recipe): RecipeViewModel
+    }
 
     init {
         fetchRecipe()

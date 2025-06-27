@@ -33,22 +33,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.sarunasbucius.nutriprice.core.navigation.LocalBackStack
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
-import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 import com.github.sarunasbucius.nutriprice.core.navigation.model.NutritionalValueNav
 import com.github.sarunasbucius.nutriprice.core.navigation.model.PurchaseDetailsNav
 import com.github.sarunasbucius.nutriprice.graphql.ProductAggregateQuery
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductScreen(productViewModel: ProductViewModel = hiltViewModel()) {
+fun ProductScreen(viewModel: ProductViewModel = hiltViewModel()) {
     PullToRefreshBox(
-        isRefreshing = productViewModel.uiState.isLoading,
-        onRefresh = { productViewModel.fetchProduct() }
+        isRefreshing = viewModel.uiState.isLoading,
+        onRefresh = { viewModel.fetchProduct() }
     ) {
-        if (!productViewModel.uiState.isLoading) {
-            ProductDetails(uiState = productViewModel.uiState) {
-                productViewModel.selectVariety(it)
+        if (!viewModel.uiState.isLoading) {
+            ProductDetails(uiState = viewModel.uiState) {
+                viewModel.selectVariety(it)
             }
         }
     }
@@ -56,7 +56,7 @@ fun ProductScreen(productViewModel: ProductViewModel = hiltViewModel()) {
 
 @Composable
 fun ProductDetails(uiState: ProductAggregateUi, onVarietySelected: (String) -> Unit) {
-    val navigator = currentComposeNavigator
+    val navigator = LocalBackStack.current
 
     Column(
         modifier = Modifier
@@ -93,7 +93,7 @@ fun ProductDetails(uiState: ProductAggregateUi, onVarietySelected: (String) -> U
         Icon(
             modifier = Modifier
                 .clickable(onClick = {
-                    navigator.navigate(
+                    navigator.add(
                         NutriPriceScreen.EditProductName(
                             uiState.productId,
                             uiState.productAggregate.name,
@@ -180,7 +180,7 @@ fun ProductDetails(uiState: ProductAggregateUi, onVarietySelected: (String) -> U
             Icon(
                 modifier = Modifier
                     .clickable(onClick = {
-                        navigator.navigate(
+                        navigator.add(
                             NutriPriceScreen.EditNutritionalValue(
                                 productId = uiState.productId,
                                 varietyName = uiState.selectedVariety.varietyName,
@@ -204,7 +204,7 @@ fun ProductDetails(uiState: ProductAggregateUi, onVarietySelected: (String) -> U
             )
         } else {
             Button(onClick = {
-                navigator.navigate(
+                navigator.add(
                     NutriPriceScreen.EditNutritionalValue(
                         productId = uiState.productId,
                         varietyName = uiState.selectedVariety.varietyName,
@@ -260,7 +260,7 @@ fun ProductDetails(uiState: ProductAggregateUi, onVarietySelected: (String) -> U
             Icon(
                 modifier = Modifier
                     .clickable(onClick = {
-                        navigator.navigate(
+                        navigator.add(
                             NutriPriceScreen.EditPurchase(
                                 purchaseDetails = PurchaseDetailsNav(
                                     id = purchasedProduct.id,

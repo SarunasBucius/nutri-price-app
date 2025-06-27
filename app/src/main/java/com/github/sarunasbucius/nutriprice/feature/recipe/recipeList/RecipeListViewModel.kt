@@ -5,8 +5,7 @@ import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
-import com.github.sarunasbucius.nutriprice.core.navigation.AppComposeNavigator
-import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
+import com.github.sarunasbucius.nutriprice.core.navigation.NavigationManager
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarController
@@ -28,7 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RecipeListViewModel @Inject constructor(
     private val apolloClient: ApolloClient,
-    private val navigation: AppComposeNavigator<NutriPriceScreen>,
+    private val navigation: NavigationManager,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<RecipeListUiState>(RecipeListUiState.Idle)

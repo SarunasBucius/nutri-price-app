@@ -11,41 +11,41 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.github.sarunasbucius.nutriprice.core.navigation.LocalBackStack
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
-import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 
 @Composable
 fun HomeScreen() {
-    val composeNavigator = currentComposeNavigator
+    val backStack = LocalBackStack.current
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(onClick = {
-            composeNavigator.navigate(NutriPriceScreen.ProductList)
+            backStack.add(NutriPriceScreen.ProductList)
         }) {
             Text(text = "Product list")
         }
         Button(onClick = {
-            composeNavigator.navigate(NutriPriceScreen.InsertProduct)
+            backStack.add(NutriPriceScreen.InsertProduct)
         }) {
             Text(text = "Insert Product")
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
-            composeNavigator.navigate(NutriPriceScreen.RecipeList)
+            backStack.add(NutriPriceScreen.RecipeList)
         }) {
             Text(text = "Recipe list")
         }
         Button(onClick = {
-            composeNavigator.navigate(NutriPriceScreen.UpsertRecipe())
+            backStack.add(NutriPriceScreen.UpsertRecipe())
         }) {
             Text(text = "Insert Recipe")
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
-            composeNavigator.navigate(NutriPriceScreen.PreparedRecipes)
+            backStack.add(NutriPriceScreen.PreparedRecipes)
         }) {
             Text(text = "Prepared Recipes")
         }

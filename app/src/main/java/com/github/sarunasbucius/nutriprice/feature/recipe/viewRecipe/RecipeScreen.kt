@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.sarunasbucius.nutriprice.core.design.component.NutriPriceCircularProgress
+import com.github.sarunasbucius.nutriprice.core.navigation.LocalBackStack
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
-import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 
 @Composable
 fun RecipeScreen(viewModel: RecipeViewModel = hiltViewModel()) {
@@ -35,7 +35,7 @@ fun RecipeScreen(viewModel: RecipeViewModel = hiltViewModel()) {
 
 @Composable
 fun RecipeDetails(uiState: RecipeUi) {
-    val navigator = currentComposeNavigator
+    val composeNavigator = LocalBackStack.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -129,7 +129,7 @@ fun RecipeDetails(uiState: RecipeUi) {
         Icon(
             modifier = Modifier
                 .clickable(onClick = {
-                    navigator.navigate(
+                    composeNavigator.add(
                         NutriPriceScreen.UpsertRecipe(
                             uiState.recipeName
                         )

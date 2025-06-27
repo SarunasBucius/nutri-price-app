@@ -15,13 +15,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.sarunasbucius.nutriprice.core.design.component.DatePicker
+import com.github.sarunasbucius.nutriprice.core.navigation.LocalBackStack
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
-import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 
 @Composable
 fun PreparedRecipesScreen(viewModel: PreparedRecipesViewModel = hiltViewModel()) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    val navigation = currentComposeNavigator
+    val composeNavigator = LocalBackStack.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -34,7 +34,7 @@ fun PreparedRecipesScreen(viewModel: PreparedRecipesViewModel = hiltViewModel())
             onDateChange = { viewModel.updateDate(it) }
         )
         Button(onClick = {
-            navigation.navigate(NutriPriceScreen.PlanRecipes(uiState.value.date))
+            composeNavigator.add(NutriPriceScreen.PlanRecipes(uiState.value.date))
         }) {
             Text("Plan day's recipes")
         }
@@ -44,7 +44,7 @@ fun PreparedRecipesScreen(viewModel: PreparedRecipesViewModel = hiltViewModel())
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = {
-                        navigation.navigate(
+                        composeNavigator.add(
                             NutriPriceScreen.PreparedRecipe(
                                 it,
                                 uiState.value.date

@@ -4,21 +4,22 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
-import com.github.sarunasbucius.nutriprice.core.navigation.AppComposeNavigator
+import com.github.sarunasbucius.nutriprice.core.navigation.NavigationManager
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarController
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarEvent
 import com.github.sarunasbucius.nutriprice.graphql.PreparedRecipeQuery
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class PreparedRecipeUiState(
     val recipeName: String = "",
@@ -32,18 +33,23 @@ data class PreparedRecipeUiState(
     val isLoading: Boolean = true
 )
 
-@HiltViewModel
-class ViewPreparedRecipeViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = ViewPreparedRecipeViewModel.Factory::class)
+class ViewPreparedRecipeViewModel @AssistedInject constructor(
+    @Assisted val navKey: NutriPriceScreen.PreparedRecipe,
     private val apolloClient: ApolloClient,
-    private val navigation: AppComposeNavigator<NutriPriceScreen>,
+    private val navigation: NavigationManager,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    private val recipeName: String = savedStateHandle["recipeName"] ?: ""
-    private val preparedDate: String = savedStateHandle["preparedDate"] ?: ""
+    private val recipeName: String = navKey.recipeName
+    private val preparedDate: String = navKey.preparedDate
 
     var uiState by mutableStateOf(PreparedRecipeUiState())
         private set
+
+    @AssistedFactory
+    interface Factory {
+        fun create(navKey: NutriPriceScreen.PreparedRecipe): ViewPreparedRecipeViewModel
+    }
 
     init {
         fetchPreparedRecipe()

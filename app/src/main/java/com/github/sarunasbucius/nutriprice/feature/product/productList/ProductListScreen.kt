@@ -16,14 +16,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.sarunasbucius.nutriprice.core.design.component.NutriPriceCircularProgress
+import com.github.sarunasbucius.nutriprice.core.navigation.LocalBackStack
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
-import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 
 @Composable
 fun ProductListScreen(productListViewModel: ProductListViewModel = hiltViewModel()) {
     val uiState by productListViewModel.uiState.collectAsStateWithLifecycle()
     val productList by productListViewModel.productList.collectAsStateWithLifecycle()
-    val composeNavigator = currentComposeNavigator
+    val composeNavigator = LocalBackStack.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -38,7 +38,7 @@ fun ProductListScreen(productListViewModel: ProductListViewModel = hiltViewModel
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(onClick = {
-                            composeNavigator.navigate(NutriPriceScreen.Product(it.id))
+                            composeNavigator.add(NutriPriceScreen.Product(it.id))
                         }),
                     text = it.name
                 )

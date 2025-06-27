@@ -4,11 +4,10 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
-import com.github.sarunasbucius.nutriprice.core.navigation.AppComposeNavigator
+import com.github.sarunasbucius.nutriprice.core.navigation.NavigationManager
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.navigation.model.PreparedRecipeNav
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
@@ -20,6 +19,9 @@ import com.github.sarunasbucius.nutriprice.graphql.ProductsQuery
 import com.github.sarunasbucius.nutriprice.graphql.UpdatePreparedRecipeMutation
 import com.github.sarunasbucius.nutriprice.graphql.type.IngredientInput
 import com.github.sarunasbucius.nutriprice.graphql.type.PreparedRecipeInput
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,7 +33,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
-import javax.inject.Inject
 
 data class EditPreparedRecipeUiState(
     val recipeName: String = "",
@@ -45,17 +46,22 @@ data class EditPreparedRecipeUiState(
     val portionNumber: Double = 1.0
 )
 
-@HiltViewModel
-class EditPreparedRecipeViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = EditPreparedRecipeViewModel.Factory::class)
+class EditPreparedRecipeViewModel @AssistedInject constructor(
+    @Assisted val navKey: NutriPriceScreen.EditPreparedRecipe,
     private val apolloClient: ApolloClient,
-    private val navigation: AppComposeNavigator<NutriPriceScreen>,
+    private val navigation: NavigationManager,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    val preparedRecipe: PreparedRecipeNav? = savedStateHandle["preparedRecipe"]
+    val preparedRecipe: PreparedRecipeNav = navKey.preparedRecipe
 
     var uiState by mutableStateOf(EditPreparedRecipeUiState())
         private set
+
+    @AssistedFactory
+    interface Factory {
+        fun create(navKey: NutriPriceScreen.EditPreparedRecipe): EditPreparedRecipeViewModel
+    }
 
     val productList: StateFlow<List<String>> = flow {
         val response = apolloClient.query(ProductsQuery()).execute()
@@ -74,31 +80,25 @@ class EditPreparedRecipeViewModel @Inject constructor(
         )
 
     init {
-        if (preparedRecipe == null) {
-            viewModelScope.launch {
-                SnackbarController.sendEvent(SnackbarEvent("ERROR: something went wrong"))
-                navigation.navigateUp()
-            }
-        } else {
-            uiState = uiState.copy(
-                recipeName = preparedRecipe.name,
-                notes = preparedRecipe.notes,
-                steps = preparedRecipe.steps,
-                ingredients = preparedRecipe.ingredients.map {
-                    IngredientUi(
-                        it.product,
-                        it.amount.toString(),
-                        it.unit,
-                        it.notes
-                    )
-                } + IngredientUi(),
-                preparedDate = preparedRecipe.preparedDate,
-                portion = preparedRecipe.portion.toString(),
-                isLoading = false,
-                portionNumber = preparedRecipe.portion
-            )
-        }
+        uiState = uiState.copy(
+            recipeName = preparedRecipe.name,
+            notes = preparedRecipe.notes,
+            steps = preparedRecipe.steps,
+            ingredients = preparedRecipe.ingredients.map {
+                IngredientUi(
+                    it.product,
+                    it.amount.toString(),
+                    it.unit,
+                    it.notes
+                )
+            } + IngredientUi(),
+            preparedDate = preparedRecipe.preparedDate,
+            portion = preparedRecipe.portion.toString(),
+            isLoading = false,
+            portionNumber = preparedRecipe.portion
+        )
     }
+
 
     fun updatePreparedDate(date: String) {
         uiState = uiState.copy(preparedDate = date)

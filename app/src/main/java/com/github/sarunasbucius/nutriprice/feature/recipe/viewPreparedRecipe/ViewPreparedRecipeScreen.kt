@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.github.sarunasbucius.nutriprice.core.design.component.NutriPriceCircularProgress
+import com.github.sarunasbucius.nutriprice.core.navigation.LocalBackStack
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
-import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
 import com.github.sarunasbucius.nutriprice.core.navigation.model.IngredientNav
 import com.github.sarunasbucius.nutriprice.core.navigation.model.PreparedRecipeNav
 import java.text.DecimalFormat
@@ -38,7 +38,7 @@ fun PreparedRecipeScreen(viewModel: ViewPreparedRecipeViewModel = hiltViewModel(
 
 @Composable
 fun PreparedRecipeDetails(uiState: PreparedRecipeUiState) {
-    val navigation = currentComposeNavigator
+    val composeNavigator = LocalBackStack.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -148,7 +148,7 @@ fun PreparedRecipeDetails(uiState: PreparedRecipeUiState) {
         Icon(
             modifier = Modifier
                 .clickable(onClick = {
-                    navigation.navigate(
+                    composeNavigator.add(
                         NutriPriceScreen.EditPreparedRecipe(
                             PreparedRecipeNav(
                                 name = uiState.recipeName,

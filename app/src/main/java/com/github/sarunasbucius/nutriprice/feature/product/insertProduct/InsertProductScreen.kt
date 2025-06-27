@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
+import com.github.sarunasbucius.nutriprice.core.navigation.LocalBackStack
 import com.github.sarunasbucius.nutriprice.feature.product.common.components.NutritionalValueInput
 import com.github.sarunasbucius.nutriprice.feature.product.common.components.ProductNameInput
 import com.github.sarunasbucius.nutriprice.feature.product.common.components.PurchaseInput
@@ -26,7 +26,7 @@ fun InsertProductScreen(
     insertProductViewModel: InsertProductViewModel = hiltViewModel()
 ) {
     val uiState = insertProductViewModel.uiState
-    val composeNavigator = currentComposeNavigator
+    val composeNavigator = LocalBackStack.current
 
     Column(
         modifier = Modifier
@@ -59,7 +59,7 @@ fun InsertProductScreen(
             Text(text = it, color = Color.Red)
         }
 
-        Button(onClick = { insertProductViewModel.insertProduct { composeNavigator.navigateUp() } }) {
+        Button(onClick = { insertProductViewModel.insertProduct { composeNavigator.removeLastOrNull() } }) {
             Text(text = "Insert product")
         }
     }

@@ -4,11 +4,11 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
-import com.github.sarunasbucius.nutriprice.core.navigation.AppComposeNavigator
+import com.github.sarunasbucius.nutriprice.core.navigation.NavigationManager
+import com.github.sarunasbucius.nutriprice.core.navigation.NavigationResult
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.navigation.model.NutritionalValueNav
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
@@ -16,12 +16,14 @@ import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarController
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarEvent
 import com.github.sarunasbucius.nutriprice.feature.product.common.model.NutritionalValueUi
+import com.github.sarunasbucius.nutriprice.graphql.ProductAggregateQuery
 import com.github.sarunasbucius.nutriprice.graphql.UpdateNutritionalValueMutation
-import com.github.sarunasbucius.nutriprice.graphql.type.NutritionalValueInput
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class EditNutritionalValueUiState(
     val nutritionalValue: NutritionalValueUi = NutritionalValueUi(),
@@ -29,27 +31,32 @@ data class EditNutritionalValueUiState(
 )
 
 
-@HiltViewModel
-class EditNutritionalValueViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = EditNutritionalValueViewModel.Factory::class)
+class EditNutritionalValueViewModel @AssistedInject constructor(
+    @Assisted val navKey: NutriPriceScreen.EditNutritionalValue,
     private val apolloClient: ApolloClient,
-    private val navigation: AppComposeNavigator<NutriPriceScreen>,
+    private val navigation: NavigationManager,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    val productId = savedStateHandle["productId"] ?: ""
-    val varietyName = savedStateHandle["varietyName"] ?: ""
-    val nutritionalValue: NutritionalValueNav? = savedStateHandle["nutritionalValue"]
+    val productId = navKey.productId
+    val varietyName = navKey.varietyName
+    val nutritionalValue: NutritionalValueNav = navKey.nutritionalValue
     var uiState by mutableStateOf(EditNutritionalValueUiState())
         private set
 
+    @AssistedFactory
+    interface Factory {
+        fun create(navKey: NutriPriceScreen.EditNutritionalValue): EditNutritionalValueViewModel
+    }
+
     init {
-        if (varietyName.isEmpty() || nutritionalValue == null || productId.isEmpty()) {
+        if (varietyName.isEmpty() || productId.isEmpty()) {
             viewModelScope.launch {
                 SnackbarController.sendEvent(SnackbarEvent("ERROR: something went wrong"))
                 navigation.navigateUp()
             }
         }
-        updateNutritionalValue(NutritionalValueUi.fromApiModel(nutritionalValue!!))
+        updateNutritionalValue(NutritionalValueUi.fromApiModel(nutritionalValue))
     }
 
     fun updateNutritionalValue(nv: NutritionalValueUi) {
@@ -69,21 +76,7 @@ class EditNutritionalValueViewModel @Inject constructor(
                 UpdateNutritionalValueMutation(
                     id = productId,
                     varietyName = varietyName,
-                    input = NutritionalValueInput(
-                        unit = uiState.nutritionalValue.unit,
-                        energyValueKcal = uiState.nutritionalValue.energyValueKcal.toDoubleOrNull()
-                            ?: 0.0,
-                        fat = uiState.nutritionalValue.fat.toDoubleOrNull() ?: 0.0,
-                        saturatedFat = uiState.nutritionalValue.saturatedFat.toDoubleOrNull()
-                            ?: 0.0,
-                        carbohydrate = uiState.nutritionalValue.carbohydrate.toDoubleOrNull()
-                            ?: 0.0,
-                        carbohydrateSugars = uiState.nutritionalValue.carbohydrateSugars.toDoubleOrNull()
-                            ?: 0.0,
-                        fibre = uiState.nutritionalValue.fibre.toDoubleOrNull() ?: 0.0,
-                        protein = uiState.nutritionalValue.protein.toDoubleOrNull() ?: 0.0,
-                        salt = uiState.nutritionalValue.salt.toDoubleOrNull() ?: 0.0
-                    ),
+                    input = uiState.nutritionalValue.toApiModel(),
                 )
             ).execute()
             if (result.hasErrors()) {
@@ -92,7 +85,29 @@ class EditNutritionalValueViewModel @Inject constructor(
                 uiState = uiState.copy(errors = errors)
             } else {
                 SnackbarController.sendEvent(SnackbarEvent("Updated successfully"))
-                navigation.navigateUp()
+                navigation.sendResultAndNavigateUp(
+                    result = NavigationResult.NutritionalValue(
+                        productId = navKey.productId,
+                        varietyName = navKey.varietyName,
+                        nutritionalValue = ProductAggregateQuery.NutritionalValue(
+                            id = result.data?.upsertNutritionalValue ?: "",
+                            unit = uiState.nutritionalValue.unit,
+                            energyValueKcal = uiState.nutritionalValue.energyValueKcal.toDoubleOrNull()
+                                ?: 0.0,
+                            fat = uiState.nutritionalValue.fat.toDoubleOrNull() ?: 0.0,
+                            saturatedFat = uiState.nutritionalValue.saturatedFat.toDoubleOrNull()
+                                ?: 0.0,
+                            carbohydrate = uiState.nutritionalValue.carbohydrate.toDoubleOrNull()
+                                ?: 0.0,
+                            carbohydrateSugars = uiState.nutritionalValue.carbohydrateSugars.toDoubleOrNull()
+                                ?: 0.0,
+                            fibre = uiState.nutritionalValue.fibre.toDoubleOrNull() ?: 0.0,
+                            protein = uiState.nutritionalValue.protein.toDoubleOrNull() ?: 0.0,
+                            salt = uiState.nutritionalValue.salt.toDoubleOrNull() ?: 0.0
+
+                        )
+                    ),
+                )
             }
         }
     }

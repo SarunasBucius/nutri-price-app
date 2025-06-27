@@ -1,66 +1,43 @@
 package com.github.sarunasbucius.nutriprice.core.navigation
 
-import androidx.navigation.NavController
-import androidx.navigation.NavOptionsBuilder
+import androidx.compose.runtime.mutableStateListOf
+import com.github.sarunasbucius.nutriprice.graphql.ProductAggregateQuery
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onSubscription
+import kotlinx.coroutines.flow.asSharedFlow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-abstract class Navigator {
-    val navigationCommands =
-        MutableSharedFlow<NavigationCommand>(extraBufferCapacity = Int.MAX_VALUE)
-
-    val navControllerFlow = MutableStateFlow<NavController?>(null)
+@Singleton
+class NavigationManager @Inject constructor() {
+    val backStack = mutableStateListOf<NutriPriceScreen>(NutriPriceScreen.Home)
+    private val _navigationResults = MutableSharedFlow<NavigationResult>(extraBufferCapacity = 1)
+    val navigationResults = _navigationResults.asSharedFlow()
 
     fun navigateUp() {
-        navigationCommands.tryEmit(NavigationCommand.NavigateUp)
+        backStack.removeLastOrNull()
+    }
+
+    fun sendResult(result: NavigationResult) {
+        _navigationResults.tryEmit(result)
+    }
+
+    fun sendResultAndNavigateUp(result: NavigationResult) {
+        sendResult(result)
+        navigateUp()
     }
 }
 
-abstract class AppComposeNavigator<T : Any> : Navigator() {
+sealed class NavigationResult {
+    data class ProductName(
+        val productId: String,
+        val productName: String,
+        val variety: String,
+        var oldVariety: String,
+    ) : NavigationResult()
 
-    abstract fun navigate(route: T, optionsBuilder: (NavOptionsBuilder.() -> Unit)? = null)
-
-    suspend fun handleNavigationCommands(navController: NavController) {
-        navigationCommands
-            .onSubscription { this@AppComposeNavigator.navControllerFlow.value = navController }
-            .onCompletion { this@AppComposeNavigator.navControllerFlow.value = null }
-            .collect { navController.handleComposeNavigationCommand(it) }
-    }
-
-    private fun NavController.handleComposeNavigationCommand(navigationCommand: NavigationCommand) {
-        when (navigationCommand) {
-            is ComposeNavigationCommand.NavigateToRoute<*> -> {
-                navigate(navigationCommand.route, navigationCommand.options)
-            }
-
-            NavigationCommand.NavigateUp -> navigateUp()
-            is ComposeNavigationCommand.PopUpToRoute<*> -> popBackStack(
-                navigationCommand.route,
-                navigationCommand.inclusive,
-            )
-
-            is ComposeNavigationCommand.NavigateUpWithResult<*, *> -> {
-                navUpWithResult(navigationCommand)
-            }
-        }
-    }
-
-    private fun NavController.navUpWithResult(
-        navigationCommand: ComposeNavigationCommand.NavigateUpWithResult<*, *>,
-    ) {
-        val backStackEntry =
-            navigationCommand.route?.let { getBackStackEntry(it) }
-                ?: previousBackStackEntry
-        backStackEntry?.savedStateHandle?.set(
-            navigationCommand.key,
-            navigationCommand.result,
-        )
-
-        navigationCommand.route?.let {
-            popBackStack(it, false)
-        } ?: navigateUp()
-    }
+    data class NutritionalValue(
+        val productId: String,
+        val varietyName: String,
+        val nutritionalValue: ProductAggregateQuery.NutritionalValue,
+    ) : NavigationResult()
 }
-

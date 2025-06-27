@@ -3,11 +3,10 @@ package com.github.sarunasbucius.nutriprice.feature.product.editPurchase
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
-import com.github.sarunasbucius.nutriprice.core.navigation.AppComposeNavigator
+import com.github.sarunasbucius.nutriprice.core.navigation.NavigationManager
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.navigation.model.PurchaseDetailsNav
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
@@ -17,10 +16,12 @@ import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarEvent
 import com.github.sarunasbucius.nutriprice.feature.product.common.model.PurchaseDetailsUi
 import com.github.sarunasbucius.nutriprice.graphql.UpdatePurchaseMutation
 import com.github.sarunasbucius.nutriprice.graphql.type.PurchaseInput
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class EditPurchaseUiState(
     val id: String = "",
@@ -28,25 +29,24 @@ data class EditPurchaseUiState(
     val errors: List<String> = listOf(),
 )
 
-@HiltViewModel
-class EditPurchaseViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = EditPurchaseViewModel.Factory::class)
+class EditPurchaseViewModel @AssistedInject constructor(
+    @Assisted val navKey: NutriPriceScreen.EditPurchase,
     private val apolloClient: ApolloClient,
-    private val navigation: AppComposeNavigator<NutriPriceScreen>,
+    private val navigation: NavigationManager,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    val purchaseDetails: PurchaseDetailsNav? = savedStateHandle["purchaseDetails"]
+    val purchaseDetails: PurchaseDetailsNav = navKey.purchaseDetails
     var uiState by mutableStateOf(EditPurchaseUiState())
         private set
 
+    @AssistedFactory
+    interface Factory {
+        fun create(navKey: NutriPriceScreen.EditPurchase): EditPurchaseViewModel
+    }
+
     init {
-        if (purchaseDetails == null) {
-            viewModelScope.launch {
-                SnackbarController.sendEvent(SnackbarEvent("ERROR: something went wrong"))
-                navigation.navigateUp()
-            }
-        }
-        updatePurchase(PurchaseDetailsUi.fromApiModel(purchaseDetails!!))
+        updatePurchase(PurchaseDetailsUi.fromApiModel(purchaseDetails))
         uiState = uiState.copy(id = purchaseDetails.id)
     }
 

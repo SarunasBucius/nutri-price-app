@@ -1,14 +1,15 @@
 package com.github.sarunasbucius.nutriprice.feature.product.editProductName
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.ApolloResponse
-import com.github.sarunasbucius.nutriprice.core.navigation.AppComposeNavigator
+import com.github.sarunasbucius.nutriprice.core.navigation.NavigationManager
+import com.github.sarunasbucius.nutriprice.core.navigation.NavigationResult
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
@@ -16,11 +17,13 @@ import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarController
 import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarEvent
 import com.github.sarunasbucius.nutriprice.graphql.UpdateProductNameMutation
 import com.github.sarunasbucius.nutriprice.graphql.UpdateVarietyNameMutation
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class EditProductNameUi(
     val productName: String,
@@ -28,25 +31,24 @@ data class EditProductNameUi(
     val errors: List<String> = emptyList()
 )
 
-@HiltViewModel
-class EditProductNameViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = EditProductNameViewModel.Factory::class)
+class EditProductNameViewModel @AssistedInject constructor(
+    @Assisted val navKey: NutriPriceScreen.EditProductName,
     private val apolloClient: ApolloClient,
-    private val navigation: AppComposeNavigator<NutriPriceScreen>,
+    private val navigation: NavigationManager,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    private val productId: String =
-        savedStateHandle["productId"] ?: ""
-    private val productName: String =
-        savedStateHandle["productName"] ?: ""
-    private val varietyName: String =
-        savedStateHandle["varietyName"] ?: ""
-
-    var uiState by mutableStateOf(EditProductNameUi(productName, varietyName))
+    var uiState by mutableStateOf(EditProductNameUi(navKey.productName, navKey.varietyName))
         private set
 
+    @AssistedFactory
+    interface Factory {
+        fun create(navKey: NutriPriceScreen.EditProductName): EditProductNameViewModel
+    }
+
     init {
-        if (productId.isEmpty()) {
+        Log.d("EditProductNameViewModel", "Init EditProductNameViewModel $navKey")
+        if (navKey.productId.isEmpty()) {
             viewModelScope.launch {
                 SnackbarController.sendEvent(SnackbarEvent("ERROR: something went wrong"))
                 navigation.navigateUp()
@@ -92,26 +94,33 @@ class EditProductNameViewModel @Inject constructor(
                 uiState = uiState.copy(errors = errors)
             } else {
                 SnackbarController.sendEvent(SnackbarEvent("Updated successfully"))
-                navigation.navigateUp()
+                navigation.sendResultAndNavigateUp(
+                    result = NavigationResult.ProductName(
+                        productId = navKey.productId,
+                        productName = uiState.productName,
+                        variety = uiState.varietyName,
+                        oldVariety = navKey.varietyName
+                    ),
+                )
             }
         }
     }
 
     suspend fun updateProductName(): ApolloResponse<UpdateProductNameMutation.Data>? {
-        if (uiState.productName == productName) {
+        if (uiState.productName == navKey.productName) {
             return null
         }
         return apolloClient.mutation(
-            UpdateProductNameMutation(productId, uiState.productName)
+            UpdateProductNameMutation(navKey.productId, uiState.productName)
         ).execute()
     }
 
     suspend fun updateVarietyName(): ApolloResponse<UpdateVarietyNameMutation.Data>? {
-        if (uiState.varietyName == varietyName) {
+        if (uiState.varietyName == navKey.varietyName) {
             return null
         }
         return apolloClient.mutation(
-            UpdateVarietyNameMutation(varietyName, uiState.varietyName)
+            UpdateVarietyNameMutation(navKey.varietyName, uiState.varietyName)
         ).execute()
     }
 }

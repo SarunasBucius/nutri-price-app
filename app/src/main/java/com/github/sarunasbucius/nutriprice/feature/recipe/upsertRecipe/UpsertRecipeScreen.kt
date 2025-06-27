@@ -40,7 +40,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.sarunasbucius.nutriprice.core.design.component.NutriPriceCircularProgress
 import com.github.sarunasbucius.nutriprice.core.design.component.UnitDropdown
-import com.github.sarunasbucius.nutriprice.core.navigation.currentComposeNavigator
+import com.github.sarunasbucius.nutriprice.core.navigation.LocalBackStack
 import com.github.sarunasbucius.nutriprice.feature.recipe.common.model.IngredientUi
 
 @Composable
@@ -48,7 +48,7 @@ fun UpsertRecipeScreen(
     upsertRecipeViewModel: UpsertRecipeViewModel = hiltViewModel()
 ) {
     val uiState = upsertRecipeViewModel.uiState
-    val composeNavigator = currentComposeNavigator
+    val composeNavigator = LocalBackStack.current
     val productList by upsertRecipeViewModel.productList.collectAsStateWithLifecycle()
 
     Column(
@@ -86,7 +86,7 @@ fun UpsertRecipeScreen(
             Text(text = it, color = Color.Red)
         }
 
-        Button(onClick = { upsertRecipeViewModel.upsertRecipe { composeNavigator.navigateUp() } }) {
+        Button(onClick = { upsertRecipeViewModel.upsertRecipe { composeNavigator.removeLastOrNull() } }) {
             Text(text = "Submit")
         }
     }

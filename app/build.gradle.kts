@@ -5,10 +5,10 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("dagger.hilt.android.plugin")
     id("com.google.devtools.ksp")
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.1.0"
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.parcelize)
     id("com.apollographql.apollo") version "4.1.1"
+    alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 val localProperties = Properties().apply {
@@ -23,12 +23,12 @@ apollo {
 
 android {
     namespace = "com.github.sarunasbucius.nutriprice"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.github.sarunasbucius.nutriprice"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -89,4 +89,9 @@ dependencies {
     implementation(libs.sandwich.retrofit)
 
     implementation(libs.apollo.runtime)
+
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.kotlinx.serialization.core)
 }

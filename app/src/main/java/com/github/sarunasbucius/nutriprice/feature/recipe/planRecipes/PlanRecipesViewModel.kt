@@ -4,11 +4,10 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
-import com.github.sarunasbucius.nutriprice.core.navigation.AppComposeNavigator
+import com.github.sarunasbucius.nutriprice.core.navigation.NavigationManager
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
@@ -17,6 +16,9 @@ import com.github.sarunasbucius.nutriprice.core.snackbar.SnackbarEvent
 import com.github.sarunasbucius.nutriprice.graphql.PlanRecipesMutation
 import com.github.sarunasbucius.nutriprice.graphql.RecipesQuery
 import com.github.sarunasbucius.nutriprice.graphql.type.PlanRecipe
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,7 +27,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class PlanRecipesUiState(
     val date: String = "",
@@ -38,17 +39,22 @@ data class PlanRecipeUi(
     val portion: String = "1",
 )
 
-@HiltViewModel
-class PlanRecipesViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = PlanRecipesViewModel.Factory::class)
+class PlanRecipesViewModel @AssistedInject constructor(
+    @Assisted val navKey: NutriPriceScreen.PlanRecipes,
     private val apolloClient: ApolloClient,
-    private val navigation: AppComposeNavigator<NutriPriceScreen>,
+    private val navigation: NavigationManager,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    val date: String = savedStateHandle["date"] ?: ""
+    val date: String = navKey.date
     var uiState by mutableStateOf(PlanRecipesUiState(date = date))
         private set
+
+    @AssistedFactory
+    interface Factory {
+        fun create(navKey: NutriPriceScreen.PlanRecipes): PlanRecipesViewModel
+    }
 
     val recipeList: StateFlow<List<String>> = flow {
         val response = apolloClient.query(RecipesQuery()).execute()

@@ -4,11 +4,10 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
-import com.github.sarunasbucius.nutriprice.core.navigation.AppComposeNavigator
+import com.github.sarunasbucius.nutriprice.core.navigation.NavigationManager
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.network.Dispatcher
 import com.github.sarunasbucius.nutriprice.core.network.NutriPriceAppDispatchers
@@ -20,6 +19,9 @@ import com.github.sarunasbucius.nutriprice.graphql.RecipeQuery
 import com.github.sarunasbucius.nutriprice.graphql.UpdateRecipeMutation
 import com.github.sarunasbucius.nutriprice.graphql.type.IngredientInput
 import com.github.sarunasbucius.nutriprice.graphql.type.RecipeInput
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,7 +32,6 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 data class UpsertRecipeUiState(
     val recipeName: String = "",
@@ -41,17 +42,22 @@ data class UpsertRecipeUiState(
     val isLoading: Boolean = true
 )
 
-@HiltViewModel
-class UpsertRecipeViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val navigation: AppComposeNavigator<NutriPriceScreen>,
+@HiltViewModel(assistedFactory = UpsertRecipeViewModel.Factory::class)
+class UpsertRecipeViewModel @AssistedInject constructor(
+    @Assisted val navKey: NutriPriceScreen.UpsertRecipe,
+    private val navigation: NavigationManager,
     private val apolloClient: ApolloClient,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    val recipeName: String? = savedStateHandle["recipeName"]
+    val recipeName: String? = navKey.recipeName
 
     var uiState by mutableStateOf(UpsertRecipeUiState())
         private set
+
+    @AssistedFactory
+    interface Factory {
+        fun create(navKey: NutriPriceScreen.UpsertRecipe): UpsertRecipeViewModel
+    }
 
     val productList: StateFlow<List<String>> = flow {
         val response = apolloClient.query(ProductsQuery()).execute()
