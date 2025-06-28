@@ -1,7 +1,5 @@
 package com.github.sarunasbucius.nutriprice.feature.recipe.recipeList
 
-import android.util.Log
-import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.ApolloClient
@@ -17,12 +15,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+data class RecipeListUiState(
+    val isLoading: Boolean = true,
+    val searchInput: String = "",
+)
 
 @HiltViewModel
 class RecipeListViewModel @Inject constructor(
@@ -30,30 +32,48 @@ class RecipeListViewModel @Inject constructor(
     private val navigation: NavigationManager,
     @Dispatcher(NutriPriceAppDispatchers.IO) private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow<RecipeListUiState>(RecipeListUiState.Idle)
+    private val _uiState = MutableStateFlow<RecipeListUiState>(RecipeListUiState())
     internal val uiState = _uiState.asStateFlow()
 
-    val recipeList: StateFlow<List<String>> = flow {
-        val response = apolloClient.query(RecipesQuery()).execute()
-        emit(response.data?.recipes ?: emptyList())
+    private val _recipeList = MutableStateFlow<List<String>>(emptyList())
 
-        if (!response.errors.isNullOrEmpty()) {
-            Log.e("RecipeListViewModel", response.errors.toString())
-            SnackbarController.sendEvent(SnackbarEvent("ERROR: something went wrong"))
-            navigation.navigateUp()
+    val filteredRecipeList: StateFlow<List<String>> =
+        uiState
+            .map { state ->
+                val input = state.searchInput.trim()
+                if (input.isBlank()) {
+                    _recipeList.value
+                } else {
+                    _recipeList.value.filter {
+                        it.contains(input, ignoreCase = true)
+                    }
+                }
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
+
+    init {
+        fetchRecipes()
+    }
+
+    fun fetchRecipes() {
+        viewModelScope.launch(ioDispatcher) {
+            _uiState.update { it.copy(isLoading = true) }
+            val response = apolloClient.query(RecipesQuery()).execute()
+            if (!response.errors.isNullOrEmpty()) {
+                SnackbarController.sendEvent(SnackbarEvent("ERROR: something went wrong"))
+                navigation.navigateUp()
+            } else {
+                _recipeList.update { response.data?.recipes ?: emptyList() }
+                _uiState.update { it.copy(isLoading = false) }
+            }
         }
-    }.onStart { _uiState.emit(RecipeListUiState.Loading) }
-        .onCompletion { _uiState.emit(RecipeListUiState.Idle) }.flowOn(ioDispatcher).stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList()
-        )
+    }
 
-}
-
-@Stable
-internal sealed interface RecipeListUiState {
-    data object Idle : RecipeListUiState
-    data object Loading : RecipeListUiState
-    data class Error(val message: String) : RecipeListUiState
+    fun onSearchInputChanged(newInput: String) {
+        _uiState.update { it.copy(searchInput = newInput) }
+    }
 }
