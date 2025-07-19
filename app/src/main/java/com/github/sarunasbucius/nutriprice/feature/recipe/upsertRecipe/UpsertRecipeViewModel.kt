@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 
 data class UpsertRecipeUiState(
     val recipeName: String = "",
+    val isFavorite: Boolean = false,
     val notes: String = "",
     val steps: List<String> = listOf(""),
     val ingredients: List<IngredientUi> = listOf(IngredientUi()),
@@ -101,6 +102,7 @@ class UpsertRecipeViewModel @AssistedInject constructor(
 
                 uiState = uiState.copy(
                     recipeName = recipeName,
+                    isFavorite = result.data?.recipe?.isFavorite == true,
                     notes = result.data?.recipe?.notes ?: "",
                     steps = steps,
                     ingredients = ingredients,
@@ -110,6 +112,10 @@ class UpsertRecipeViewModel @AssistedInject constructor(
         } else {
             uiState = uiState.copy(isLoading = false)
         }
+    }
+
+    fun toggleIsFavorite() {
+        uiState = uiState.copy(isFavorite = !uiState.isFavorite)
     }
 
     fun updateName(name: String) {
@@ -177,6 +183,7 @@ class UpsertRecipeViewModel @AssistedInject constructor(
                 UpdateRecipeMutation(
                     recipe = RecipeInput(
                         recipeName = uiState.recipeName,
+                        isFavorite = uiState.isFavorite,
                         steps = steps,
                         notes = uiState.notes,
                         ingredients = ingredients.map { ingredient ->

@@ -22,7 +22,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 
 data class RecipeUi(
-    val recipe: RecipeQuery.Recipe = RecipeQuery.Recipe("", emptyList(), emptyList()),
+    val recipe: RecipeQuery.Recipe = RecipeQuery.Recipe(false, "", emptyList(), emptyList()),
     val recipeName: String = "",
     val isLoading: Boolean = true
 )
@@ -56,7 +56,12 @@ class RecipeViewModel @AssistedInject constructor(
             )
             val response = apolloClient.query(RecipeQuery(recipeName)).execute()
             uiState = uiState.copy(
-                recipe = response.data?.recipe ?: RecipeQuery.Recipe("", emptyList(), emptyList()),
+                recipe = response.data?.recipe ?: RecipeQuery.Recipe(
+                    false,
+                    "",
+                    emptyList(),
+                    emptyList()
+                ),
                 isLoading = false
             )
             if (!response.errors.isNullOrEmpty()) {

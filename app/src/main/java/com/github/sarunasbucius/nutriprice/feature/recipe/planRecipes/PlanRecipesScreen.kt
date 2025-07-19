@@ -57,11 +57,11 @@ fun PlanRecipesScreen(viewModel: PlanRecipesViewModel = hiltViewModel()) {
                 )
                 TextField(
                     modifier = Modifier
-                        .weight(0.3f)
+                        .weight(0.4f)
                         .padding(start = 4.dp),
                     value = planRecipeUi.portion,
                     onValueChange = { viewModel.updatePortion(it, index) },
-                    label = { Text("Portions") },
+                    label = { Text(text = "Portions", maxLines = 1) },
                 )
             }
         }

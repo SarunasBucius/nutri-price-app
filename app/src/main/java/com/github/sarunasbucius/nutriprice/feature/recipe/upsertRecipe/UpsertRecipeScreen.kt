@@ -1,5 +1,7 @@
 package com.github.sarunasbucius.nutriprice.feature.recipe.upsertRecipe
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,11 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -98,10 +102,26 @@ fun RecipeDetailsSection(
     uiState: UpsertRecipeUiState,
     upsertRecipeViewModel: UpsertRecipeViewModel
 ) {
-    Text(
-        modifier = modifier.padding(8.dp),
-        text = "Recipe details",
-    )
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Recipe details"
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Icon(
+            imageVector = Icons.Default.Star,
+            contentDescription = if (uiState.isFavorite) "Favourite" else "Not favourite",
+            tint = if (uiState.isFavorite) Color(0xFFFFC107) else Color.Gray.copy(alpha = 0.4f),
+            modifier = Modifier
+                .clickable { upsertRecipeViewModel.toggleIsFavorite() }
+        )
+    }
 
     TextField(
         modifier = Modifier

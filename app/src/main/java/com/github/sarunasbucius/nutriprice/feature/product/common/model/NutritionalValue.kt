@@ -56,7 +56,7 @@ data class NutritionalValueUi(
     companion object {
         fun fromApiModel(nutritionalValue: NutritionalValueNav): NutritionalValueUi {
             return NutritionalValueUi(
-                unit = nutritionalValue.unit ?: "",
+                unit = if (nutritionalValue.unit.isNullOrEmpty()) "100 g" else nutritionalValue.unit,
                 energyValueKcal = nutritionalValue.energyValueKcal?.takeIf { it != 0.0 }?.toString()
                     ?: "",
                 fat = nutritionalValue.fat?.takeIf { it != 0.0 }?.toString() ?: "",

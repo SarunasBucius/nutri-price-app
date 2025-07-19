@@ -4,6 +4,7 @@ query Recipes {
 
 query Recipe($recipeName: String!) {
     recipe(recipeName: $recipeName) {
+        isFavorite
         notes
         steps
         ingredients {
