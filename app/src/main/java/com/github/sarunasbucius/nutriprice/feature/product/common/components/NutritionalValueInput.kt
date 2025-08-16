@@ -16,6 +16,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.github.sarunasbucius.nutriprice.core.design.component.UnitDropdown
 import com.github.sarunasbucius.nutriprice.feature.product.common.model.NutritionalValueUi
+import com.github.sarunasbucius.nutriprice.feature.product.common.model.UnitDisplayMap
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -38,7 +39,7 @@ fun NutritionalValueInput(
                 .weight(1f)
                 .padding(end = 4.dp),
             unit = nutritionalValue.unit,
-            units = listOf("", "100 g", "100 ml", "1 piece"),
+            unitDisplay = UnitDisplayMap,
             onValueChange = {
                 updateNutritionalValue(
                     nutritionalValue.copy(unit = it)

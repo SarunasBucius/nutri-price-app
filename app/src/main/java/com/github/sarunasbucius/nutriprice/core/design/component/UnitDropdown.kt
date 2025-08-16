@@ -18,10 +18,11 @@ import androidx.compose.ui.Modifier
 fun UnitDropdown(
     modifier: Modifier = Modifier,
     unit: String,
-    units: List<String> = listOf("", "g", "ml", "pcs"),
+    unitDisplay: Map<String, String>? = null,
     onValueChange: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val baseUnits = listOf("", "g", "ml", "pcs")
 
     ExposedDropdownMenuBox(
         modifier = modifier,
@@ -29,22 +30,22 @@ fun UnitDropdown(
         onExpandedChange = { expanded = it }
     ) {
         TextField(
-            value = unit,
-            onValueChange = { onValueChange },
-            modifier = Modifier
-                .menuAnchor(type = MenuAnchorType.PrimaryEditable, true),
+            value = unitDisplay?.get(unit) ?: unit,
+            onValueChange = {},
+            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true),
             readOnly = true,
             label = { Text("Unit") },
         )
+
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            units.forEach { item ->
+            baseUnits.forEach { baseUnit ->
                 DropdownMenuItem(
-                    text = { Text(text = item) },
+                    text = { Text(text = unitDisplay?.get(baseUnit) ?: baseUnit) },
                     onClick = {
-                        onValueChange(item)
+                        onValueChange(baseUnit)
                         expanded = false
                     }
                 )

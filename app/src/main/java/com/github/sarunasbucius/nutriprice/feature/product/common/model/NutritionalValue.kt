@@ -3,6 +3,13 @@ package com.github.sarunasbucius.nutriprice.feature.product.common.model
 import com.github.sarunasbucius.nutriprice.core.navigation.model.NutritionalValueNav
 import com.github.sarunasbucius.nutriprice.graphql.type.NutritionalValueInput
 
+val UnitDisplayMap = mapOf(
+    "" to "",
+    "g" to "100 g",
+    "ml" to "100 ml",
+    "pcs" to "piece"
+)
+
 data class NutritionalValueUi(
     val unit: String = "",
     val energyValueKcal: String = "",

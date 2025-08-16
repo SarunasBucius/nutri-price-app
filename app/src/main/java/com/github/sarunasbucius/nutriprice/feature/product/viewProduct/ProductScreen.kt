@@ -37,6 +37,7 @@ import com.github.sarunasbucius.nutriprice.core.navigation.LocalBackStack
 import com.github.sarunasbucius.nutriprice.core.navigation.NutriPriceScreen
 import com.github.sarunasbucius.nutriprice.core.navigation.model.NutritionalValueNav
 import com.github.sarunasbucius.nutriprice.core.navigation.model.PurchaseDetailsNav
+import com.github.sarunasbucius.nutriprice.feature.product.common.model.UnitDisplayMap
 import com.github.sarunasbucius.nutriprice.graphql.ProductAggregateQuery
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -120,7 +121,8 @@ fun ProductDetails(uiState: ProductAggregateUi, onVarietySelected: (String) -> U
                 TextWithLabel(
                     modifier = Modifier.weight(1f),
                     label = "Unit",
-                    text = uiState.selectedVariety.nutritionalValue.unit
+                    text = UnitDisplayMap[uiState.selectedVariety.nutritionalValue.unit]
+                        ?: uiState.selectedVariety.nutritionalValue.unit
                 )
                 TextWithLabel(
                     modifier = Modifier.weight(1f),
